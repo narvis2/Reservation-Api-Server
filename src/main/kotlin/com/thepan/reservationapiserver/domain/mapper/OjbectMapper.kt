@@ -4,6 +4,8 @@ import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResp
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationCreateRequest
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
+import com.thepan.reservationapiserver.domain.seat.entity.SeatType
+import com.thepan.reservationapiserver.exception.SeatNotFoundException
 
 fun ReservationCreateRequest.toEntity(seats: List<Seat>): Reservation = Reservation(
     name = this.name,
@@ -22,4 +24,19 @@ fun List<Reservation>.toReservationAllResponseList(): List<ReservationAllRespons
         reservationCount = it.reservationCount,
         seat = it.seat.map { s -> s.seat }
     )
+}
+
+fun List<String>.toSeatTypeList(): List<SeatType> {
+    val seatTypes = SeatType.values()
+    
+    // all 👉 모든 조건이 맞아야 true 를 반환
+    return if (all { item ->
+            seatTypes.any { it.name == item }
+        }) {
+        mapNotNull { seatTypeString ->
+            seatTypes.firstOrNull { it.name == seatTypeString }
+        }
+    } else {
+        throw SeatNotFoundException()
+    }
 }
