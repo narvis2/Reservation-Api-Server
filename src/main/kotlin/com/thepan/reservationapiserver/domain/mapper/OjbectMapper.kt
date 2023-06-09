@@ -1,8 +1,10 @@
 package com.thepan.reservationapiserver.domain.mapper
 
 import com.thepan.reservationapiserver.config.security.CustomUserDetails
+import com.thepan.reservationapiserver.domain.member.dto.MyMemberInfoResponse
 import com.thepan.reservationapiserver.domain.member.entity.Member
 import com.thepan.reservationapiserver.domain.member.entity.MemberRole
+import com.thepan.reservationapiserver.domain.member.entity.RoleType
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationCreateRequest
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
@@ -61,3 +63,28 @@ private fun MutableSet<MemberRole>.toAuthorities(): Set<GrantedAuthority> = stre
     print("🦋 CustomUserDetails roleType 👉 $it \n")
     it.toString()
 }.map(::SimpleGrantedAuthority).collect(Collectors.toSet())
+
+fun Member.toMyMemberInfoResponse(): MyMemberInfoResponse = MyMemberInfoResponse(
+    id = id,
+    email = email,
+    phoneNumber = phoneNumber,
+    role = roles.toRoleTypeList().toRoleType()
+)
+
+private fun MutableSet<MemberRole>.toRoleTypeList(): List<RoleType> = map {
+    it.role
+}.map {
+    it.roleType
+}
+
+private fun List<RoleType>.toRoleType(): RoleType =
+    when {
+        contains(RoleType.ROLE_MASTER) -> RoleType.ROLE_MASTER
+        contains(RoleType.ROLE_ADMIN) -> RoleType.ROLE_ADMIN
+        contains(RoleType.ROLE_NOT_ALLOW) -> RoleType.ROLE_NOT_ALLOW
+        contains(RoleType.ROLE_ALLOW) -> RoleType.ROLE_ALLOW
+        contains(RoleType.ROLE_SLEEPER) -> RoleType.ROLE_SLEEPER
+        contains(RoleType.ROLE_STOP) -> RoleType.ROLE_STOP
+        
+        else -> RoleType.ROLE_STOP
+    }
