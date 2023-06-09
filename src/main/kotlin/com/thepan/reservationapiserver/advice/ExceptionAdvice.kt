@@ -1,6 +1,9 @@
 package com.thepan.reservationapiserver.advice
 
 import com.thepan.reservationapiserver.domain.base.ApiResponse
+import com.thepan.reservationapiserver.exception.AccessDeniedException
+import com.thepan.reservationapiserver.exception.AuthenticationEntryPointException
+import com.thepan.reservationapiserver.exception.LoginFailureException
 import com.thepan.reservationapiserver.exception.RoleNotFoundException
 import com.thepan.reservationapiserver.exception.SeatNotFoundException
 import mu.KotlinLogging
@@ -52,5 +55,25 @@ class ExceptionAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun roleNotFoundException(): ApiResponse<Unit> {
         return ApiResponse.failure(-1004, "요청한 등급을 찾을 수 없습니다.")
+    }
+    
+    @ExceptionHandler(LoginFailureException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // 401
+    fun loginFailureException(e: LoginFailureException): ApiResponse<Unit> {
+        return ApiResponse.failure(-1005, "로그인에 실패하였습니다.")
+    }
+    
+    // 📌 인증되지 않은 사용자, 401 응답
+    @ExceptionHandler(AuthenticationEntryPointException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun authenticationEntryPoint(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1001, "인증되지 않은 사용자입니다.")
+    }
+    
+    // ✅ 인증은 되었으나 권한이 없는 경우, 403 응답
+    @ExceptionHandler(AccessDeniedException::class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    fun accessDeniedException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1002, "접근 권한이 없습니다.")
     }
 }

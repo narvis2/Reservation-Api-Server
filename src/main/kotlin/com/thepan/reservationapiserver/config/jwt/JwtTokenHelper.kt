@@ -55,6 +55,7 @@ class JwtTokenHelper {
     private fun removeBearer(token: String): String = token.substring(TYPE.length)
     
     companion object {
-        private const val TYPE = "Bearer "
+        const val TYPE = "Bearer "
+        const val HEADER_AUTHORIZATION = "Authorization"
     }
 }
