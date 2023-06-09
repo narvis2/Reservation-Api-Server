@@ -24,17 +24,17 @@ class JwtTokenAuthenticationFilter(
     private val log = KotlinLogging.logger {}
     
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-        val token = request.getHeader(HEADER_AUTHORIZATION).takeIf {
+        val token = request.getHeader(HEADER_AUTHORIZATION)?.takeIf {
             it.isNotBlank() && it.startsWith(TYPE)
         }
-        
+    
         token?.let {
             if (tokenService.validateAccessToken(it)) {
                 log.info("🌸🌸🌸 인증된 Token 👉 $it")
                 setAccessAuthentication(token)
             }
         }
-        
+    
         filterChain.doFilter(request, response)
     }
     

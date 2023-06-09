@@ -41,6 +41,8 @@ class SecurityConfig(
                 auth.requestMatchers(
                     "/api/v1/**",
                 ).permitAll()
+                    .anyRequest() // 위의 요청을 제외한 나머지 요청
+                    .authenticated() // 별도의 인가는 필요하지 않지만 인증이 접근할 수 있음
             }
             .addFilterBefore(JwtTokenAuthenticationFilter(tokenService, userDetailsService), UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
