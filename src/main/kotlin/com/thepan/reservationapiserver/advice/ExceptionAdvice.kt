@@ -1,6 +1,7 @@
 package com.thepan.reservationapiserver.advice
 
 import com.thepan.reservationapiserver.domain.base.ApiResponse
+import com.thepan.reservationapiserver.exception.RoleNotFoundException
 import com.thepan.reservationapiserver.exception.SeatNotFoundException
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -45,5 +46,11 @@ class ExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun httpMessageNotReadableException(e: HttpMessageNotReadableException): ApiResponse<Unit> {
         return ApiResponse.failure(-1003, e.message)
+    }
+    
+    @ExceptionHandler(RoleNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun roleNotFoundException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1004, "요청한 등급을 찾을 수 없습니다.")
     }
 }
