@@ -3,7 +3,10 @@ package com.thepan.reservationapiserver.config.jwt
 import org.springframework.stereotype.Service
 
 @Service
-class JwtTokenService(private val jwtTokenHelper: JwtTokenHelper, private val jwtTokenProperties: JwtTokenProperties) {
+class JwtTokenService(
+    private val jwtTokenHelper: JwtTokenHelper,
+    private val jwtTokenProperties: JwtTokenProperties
+) {
     
     fun createAccessToken(subject: String): String = with(jwtTokenProperties) {
         jwtTokenHelper.createToken(issuer, subject, secretKey, expireTime)

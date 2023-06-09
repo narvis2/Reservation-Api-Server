@@ -1,5 +1,8 @@
 package com.thepan.reservationapiserver.config
 
+import com.thepan.reservationapiserver.config.jwt.JwtTokenService
+import com.thepan.reservationapiserver.config.security.CustomUserDetailsService
+import com.thepan.reservationapiserver.config.security.JwtTokenAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -9,12 +12,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 @EnableWebSecurity
 @Configuration
 @EnableMethodSecurity
-class SecurityConfig {
+class SecurityConfig(
+    private val tokenService: JwtTokenService,
+    private val userDetailsService: CustomUserDetailsService
+) {
     
     @Bean
     fun webSecurityCustomizer(): WebSecurityCustomizer {
@@ -35,7 +42,7 @@ class SecurityConfig {
                     "/api/v1/**",
                 ).permitAll()
             }
-        
+            .addFilterBefore(JwtTokenAuthenticationFilter(tokenService, userDetailsService), UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
     
