@@ -1,10 +1,13 @@
 package com.thepan.reservationapiserver.config
 
 import com.thepan.reservationapiserver.config.jwt.JwtTokenService
+import com.thepan.reservationapiserver.config.security.CustomAccessDeniedHandler
+import com.thepan.reservationapiserver.config.security.CustomAuthenticationEntryPoint
 import com.thepan.reservationapiserver.config.security.CustomUserDetailsService
 import com.thepan.reservationapiserver.config.security.JwtTokenAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -28,6 +31,7 @@ class SecurityConfig(
         return WebSecurityCustomizer {
             it.ignoring()
                 .requestMatchers(AntPathRequestMatcher("/h2-console/**"))
+                .requestMatchers(AntPathRequestMatcher("/exception/**"))
         }
     }
     
@@ -39,10 +43,17 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth -> // 인증, 인가 설정
                 auth.requestMatchers(
-                    "/api/v1/**",
+                    "/api/v1/sign/**",
                 ).permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/reservation").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/reservation").hasRole("MASTER")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/reservation/status").hasRole("MASTER")
                     .anyRequest() // 위의 요청을 제외한 나머지 요청
                     .authenticated() // 별도의 인가는 필요하지 않지만 인증이 접근할 수 있음
+            }
+            .exceptionHandling {
+                it.accessDeniedHandler(CustomAccessDeniedHandler())
+                it.authenticationEntryPoint(CustomAuthenticationEntryPoint())
             }
             .addFilterBefore(JwtTokenAuthenticationFilter(tokenService, userDetailsService), UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
