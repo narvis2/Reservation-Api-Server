@@ -5,6 +5,7 @@ import com.thepan.reservationapiserver.domain.mapper.toReservationAllResponseLis
 import com.thepan.reservationapiserver.domain.mapper.toSeatTypeList
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationCreateRequest
+import com.thepan.reservationapiserver.domain.reservation.dto.ReservationStatusCondition
 import com.thepan.reservationapiserver.domain.reservation.repository.ReservationRepository
 import com.thepan.reservationapiserver.domain.seat.repository.SeatRepository
 import com.thepan.reservationapiserver.exception.SeatNotFoundException
@@ -32,4 +33,7 @@ class ReservationService(
     }
     
     fun readAll(): List<ReservationAllResponse> = reservationRepository.findAll().toReservationAllResponseList()
+    
+    fun getReservationStatus(condition: ReservationStatusCondition): List<ReservationAllResponse> =
+        reservationRepository.findByReservationDate(condition.dateTime.toLocalDate()).toReservationAllResponseList()
 }
