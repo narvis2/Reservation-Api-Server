@@ -16,3 +16,10 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+jwt:
+  issuer: narvis2@naver.com
+  secret_key: study-springboot
+  refresh_secret_key: refresh-study-springboot
+  expire_time: 7200 # 60 * 60 * 2 (2시간)
+  refresh_expire_time: 604800 # 60 * 60 * 24 * 7 (7일)
