@@ -92,6 +92,6 @@ private fun List<RoleType>.toRoleType(): RoleType =
         else -> RoleType.ROLE_STOP
     }
 
-fun List<Seat>.toSeatTypeList(): List<SeatResponse> = map {
+fun List<Seat>.toSeatResponseList(): List<SeatResponse> = map {
     SeatResponse(seat = it.seatType)
 }
