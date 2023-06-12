@@ -1,11 +1,7 @@
 package com.thepan.reservationapiserver.advice
 
 import com.thepan.reservationapiserver.domain.base.ApiResponse
-import com.thepan.reservationapiserver.exception.AccessDeniedException
-import com.thepan.reservationapiserver.exception.AuthenticationEntryPointException
-import com.thepan.reservationapiserver.exception.LoginFailureException
-import com.thepan.reservationapiserver.exception.RoleNotFoundException
-import com.thepan.reservationapiserver.exception.SeatNotFoundException
+import com.thepan.reservationapiserver.exception.*
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -67,13 +63,19 @@ class ExceptionAdvice {
     @ExceptionHandler(AuthenticationEntryPointException::class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun authenticationEntryPoint(): ApiResponse<Unit> {
-        return ApiResponse.failure(-1001, "인증되지 않은 사용자입니다.")
+        return ApiResponse.failure(-1006, "인증되지 않은 사용자입니다.")
     }
     
     // ✅ 인증은 되었으나 권한이 없는 경우, 403 응답
     @ExceptionHandler(AccessDeniedException::class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     fun accessDeniedException(): ApiResponse<Unit> {
-        return ApiResponse.failure(-1002, "접근 권한이 없습니다.")
+        return ApiResponse.failure(-1007, "접근 권한이 없습니다.")
+    }
+    
+    @ExceptionHandler(MemberNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun memberNotFoundException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1008, "요청하신 회원을 찾을 수 없습니다.")
     }
 }
