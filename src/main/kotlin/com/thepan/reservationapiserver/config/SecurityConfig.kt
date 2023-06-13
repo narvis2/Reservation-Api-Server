@@ -44,7 +44,8 @@ class SecurityConfig(
             .authorizeHttpRequests { auth -> // 인증, 인가 설정
                 auth.requestMatchers(
                     "/api/v1/sign/**",
-                    "/api/v1/seats/**"
+                    "/api/v1/seats/**",
+                    "/api/v1/reservation/seats"
                 ).permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/reservation").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/reservation").hasRole("MASTER")
