@@ -85,6 +85,11 @@ class ReservationService(
         return seatList
     }
     
+    /**
+     * 📌 중복된 좌석 체크
+     * - 해당 날짜로 조회해서 예약 정보가 없으면 👉 좌석이 모두 있다는 의미, 더 이상 밑에 로직 탈 필요없이 return 처리
+     * - 중복된 좌석이 있으면 DuplicateConferenceSeatException 발생
+     */
     private fun checkIsDuplicateSeat(request: ReservationCreateRequest) {
         val selectedSeatList = checkIsValidSeatName(request)
     
