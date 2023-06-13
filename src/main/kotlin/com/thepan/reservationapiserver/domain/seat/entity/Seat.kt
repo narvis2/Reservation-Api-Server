@@ -6,7 +6,7 @@ import jakarta.persistence.*
 class Seat(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "seatId")
+    @Column(name = "seat_id")
     var id: Long? = null,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)

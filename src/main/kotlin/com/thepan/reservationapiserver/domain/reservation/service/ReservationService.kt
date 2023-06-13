@@ -1,4 +1,4 @@
-package com.thepan.reservationapiserver.domain.reservation
+package com.thepan.reservationapiserver.domain.reservation.service
 
 import com.thepan.reservationapiserver.domain.mapper.toEntity
 import com.thepan.reservationapiserver.domain.mapper.toReservationAllResponseList

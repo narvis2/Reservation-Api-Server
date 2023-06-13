@@ -8,8 +8,10 @@ import com.thepan.reservationapiserver.domain.member.entity.RoleType
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationCreateRequest
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
+import com.thepan.reservationapiserver.domain.seat.dto.SeatResponse
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
+import com.thepan.reservationapiserver.domain.seat.entity.TimeType
 import com.thepan.reservationapiserver.exception.SeatNotFoundException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -20,7 +22,8 @@ fun ReservationCreateRequest.toEntity(seats: List<Seat>): Reservation = Reservat
     phoneNumber = this.phoneNumber,
     reservationDateTime = this.reservationDateTime,
     reservationCount = this.reservationCount,
-    seats = seats
+    seats = seats,
+    timeType = TimeType.valueOf(this.timeType)
 )
 
 fun List<Reservation>.toReservationAllResponseList(): List<ReservationAllResponse> = map {
@@ -88,3 +91,7 @@ private fun List<RoleType>.toRoleType(): RoleType =
         
         else -> RoleType.ROLE_STOP
     }
+
+fun List<Seat>.toSeatResponseList(): List<SeatResponse> = map {
+    SeatResponse(seat = it.seatType)
+}

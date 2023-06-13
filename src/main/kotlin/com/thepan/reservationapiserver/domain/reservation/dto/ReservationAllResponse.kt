@@ -11,5 +11,5 @@ data class ReservationAllResponse(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     val reservationDateTime: LocalDateTime,
     val reservationCount: Int,
-    val seat: List<Seat>
+    val seat: List<Seat?>
 )
