@@ -21,6 +21,8 @@ data class ReservationCreateRequest(
     @field:NotNull(message = "예약인원 수를 입력해주세요.")
     @field:Positive(message = "올바른 예약인원 수를 입력해주세요. (0이상)")
     val reservationCount: Int,
+    @field:NotBlank(message = "예약 파트 타임을 입력해주세요.")
+    val timeType: String,
     @field:NotNull(message = "예약 좌석을 입력해주세요.")
     @field:Size(min = 1, max = 10)
     val seat: List<String>

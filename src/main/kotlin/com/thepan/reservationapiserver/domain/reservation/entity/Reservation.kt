@@ -2,6 +2,7 @@ package com.thepan.reservationapiserver.domain.reservation.entity
 
 import com.thepan.reservationapiserver.domain.base.BaseEntity
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
+import com.thepan.reservationapiserver.domain.seat.entity.TimeType
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -19,6 +20,14 @@ class Reservation(
     var reservationDateTime: LocalDateTime,
     @Column(nullable = false)
     var reservationCount: Int,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var timeType: TimeType,
+    /**
+     * Reservation 에서 ReservationSeat 를 관리하기 위해 설정
+     * cascade = [CascadeType.ALL] 👉 부모 Entity 에 대한 변경이 자식 Entity 에 영향을 미치도록
+     * orphanRemoval = true 👉 부모와 연관이 끊어진 자식 Entity 를 자동으로 제거하도록 지정
+     */
     @OneToMany(mappedBy = "reservation", cascade = [CascadeType.ALL], orphanRemoval = true)
     var seat: MutableSet<ReservationSeat> = mutableSetOf()
 ) : BaseEntity() {
@@ -27,11 +36,13 @@ class Reservation(
         phoneNumber: String,
         reservationDateTime: LocalDateTime,
         reservationCount: Int,
+        timeType: TimeType,
         seats: List<Seat>
     ) : this(
         name = name,
         phoneNumber = phoneNumber,
         reservationDateTime = reservationDateTime,
+        timeType = timeType,
         reservationCount = reservationCount
     ) {
         this.seat = seats.map { s -> ReservationSeat(this, s) }.toMutableSet()
