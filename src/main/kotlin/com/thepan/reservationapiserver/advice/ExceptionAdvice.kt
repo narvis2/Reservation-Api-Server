@@ -78,4 +78,16 @@ class ExceptionAdvice {
     fun memberNotFoundException(): ApiResponse<Unit> {
         return ApiResponse.failure(-1008, "요청하신 회원을 찾을 수 없습니다.")
     }
+    
+    @ExceptionHandler(DuplicateConferenceException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun duplicateConferenceException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1009, "같은 타임에 중복된 예약입니다.")
+    }
+    
+    @ExceptionHandler(DuplicateConferenceSeatException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun duplicateConferenceSeatException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1010, "중복된 좌석입니다.")
+    }
 }
