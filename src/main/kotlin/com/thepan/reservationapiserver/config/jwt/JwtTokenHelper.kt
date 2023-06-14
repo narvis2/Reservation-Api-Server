@@ -46,13 +46,13 @@ class JwtTokenHelper {
             false
         }
     
+    // 📌 접두사 `Bearer ` 제거
+    fun removeBearer(token: String): String = token.substring(TYPE.length)
+    
     // 📌 Token Decoding
     private fun decodeToken(secretKey: String, token: String): Jws<Claims> = Jwts.parser()
         .setSigningKey(secretKey)
         .parseClaimsJws(removeBearer(token))
-    
-    // 📌 접두사 `Bearer ` 제거
-    private fun removeBearer(token: String): String = token.substring(TYPE.length)
     
     companion object {
         const val TYPE = "Bearer "

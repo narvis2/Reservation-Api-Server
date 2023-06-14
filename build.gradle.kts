@@ -50,6 +50,9 @@ dependencies {
     // @ConfigurationProperties 사용
     kapt("org.springframework.boot:spring-boot-configuration-processor")
     
+    // Redis 추가
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    
     runtimeOnly("com.h2database:h2")
     
     testImplementation("org.springframework.boot:spring-boot-starter-test")
