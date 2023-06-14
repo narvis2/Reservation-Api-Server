@@ -90,3 +90,9 @@ private fun List<RoleType>.toRoleType(): RoleType =
         
         else -> RoleType.ROLE_STOP
     }
+
+fun List<Reservation>.toSeatList(): List<Seat> = flatMap {
+    it.seat
+}.map {
+    it.seat
+}
