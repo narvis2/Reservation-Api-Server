@@ -2,13 +2,11 @@ package com.thepan.reservationapiserver.domain.reservation
 
 import com.thepan.reservationapiserver.domain.mapper.toEntity
 import com.thepan.reservationapiserver.domain.mapper.toReservationAllResponseList
-import com.thepan.reservationapiserver.domain.mapper.toSeatList
 import com.thepan.reservationapiserver.domain.mapper.toSeatTypeList
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationCreateRequest
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationSeatListRequest
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationStatusCondition
-import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
 import com.thepan.reservationapiserver.domain.reservation.repository.ReservationRepository
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
@@ -48,16 +46,15 @@ class ReservationService(
     
     // 📌 특정 날짜에 남아있는 좌석 List 가져오기
     fun getTargetReservationSeatList(request: ReservationSeatListRequest): List<SeatType> {
-        val reservationInfoList = getReservationInfoList(request.timeType, request.reservationDateTime)
+        val reservedSeatList = getReservationInfoList(request.timeType, request.reservationDateTime)
         val allSeatList = seatRepository.findAll()
-        
-        return if (reservationInfoList.isEmpty()) {
+    
+        return if (reservedSeatList.isEmpty()) {
             allSeatList.map { it.seatType }
         } else {
-            val reservedSeatList = reservationInfoList.toSeatList()
             // 같은 날짜에 이미 예약되어있는 좌석 제거하고 남아있는 좌석만 가져오기
             val leftReservationList = allSeatList.filterNot { it in reservedSeatList }
-            
+        
             leftReservationList.map { it.seatType }
         }
     }
@@ -98,16 +95,14 @@ class ReservationService(
         if (allSeatList.isEmpty())
             throw SeatNotFoundException()
     
-        val reservationStoredInTime = getReservationInfoList(
+        val reservedSeatList = getReservationInfoList(
             request.timeType,
             request.reservationDateTime
         )
     
-        if (reservationStoredInTime.isEmpty()) return
+        if (reservedSeatList.isEmpty()) return
     
-        val reservedSeatList = reservationStoredInTime.toSeatList()
-    
-        val checkSeat = isCheckDuplicatedList<Seat>(selectedSeatList, reservedSeatList)
+        val checkSeat = isCheckDuplicatedList(selectedSeatList, reservedSeatList)
     
         if (checkSeat)
             throw DuplicateConferenceSeatException()
@@ -116,10 +111,10 @@ class ReservationService(
     private fun getReservationInfoList(
         timeType: String,
         reservationDateTime: LocalDateTime
-    ): List<Reservation> = reservationRepository.findByTimeTypeAndDateTime(
+    ): List<Seat> = reservationRepository.findByTimeTypeAndDateTime(
         stringToTimeType(timeType),
         reservationDateTime
-    )
+    ).map { it.seat }
     
     private fun stringToTimeType(timeType: String): TimeType = TimeType.valueOf(timeType)
 }

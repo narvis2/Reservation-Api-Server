@@ -1,6 +1,7 @@
 package com.thepan.reservationapiserver.domain.reservation.repository
 
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
+import com.thepan.reservationapiserver.domain.reservation.entity.ReservationSeat
 import com.thepan.reservationapiserver.domain.seat.entity.TimeType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -33,9 +34,9 @@ interface ReservationRepository : JpaRepository<Reservation, Long> {
      * 📌 지정된 날짜에 예약된 정보 List 가져오기
      * - 좌석 중복 체크에 사용될 것 임
      */
-    @Query("SELECT r FROM Reservation r WHERE r.timeType = :timeType AND r.reservationDateTime = :reservationDateTime")
+    @Query("SELECT r.seat FROM Reservation r WHERE r.timeType = :timeType AND r.reservationDateTime = :reservationDateTime")
     fun findByTimeTypeAndDateTime(
         @Param("timeType") timeType: TimeType,
         @Param("reservationDateTime") reservationDateTime: LocalDateTime
-    ): List<Reservation>
+    ): MutableSet<ReservationSeat>
 }
