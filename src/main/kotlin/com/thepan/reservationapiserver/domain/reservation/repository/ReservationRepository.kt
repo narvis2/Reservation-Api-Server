@@ -32,7 +32,6 @@ interface ReservationRepository : JpaRepository<Reservation, Long> {
     /**
      * 📌 지정된 날짜에 예약된 정보 List 가져오기
      * - 좌석 중복 체크에 사용될 것 임
-     * TODO:: r.seat 로 바꾸기
      */
     @Query("SELECT r FROM Reservation r WHERE r.timeType = :timeType AND r.reservationDateTime = :reservationDateTime")
     fun findByTimeTypeAndDateTime(
