@@ -53,6 +53,8 @@ dependencies {
     // Redis 추가
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
+    
     runtimeOnly("com.h2database:h2")
     
     testImplementation("org.springframework.boot:spring-boot-starter-test")
