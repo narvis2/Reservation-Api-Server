@@ -1,14 +1,11 @@
 package com.thepan.reservationapiserver.controller
 
 import com.thepan.reservationapiserver.domain.base.ApiResponse
-import com.thepan.reservationapiserver.domain.sign.dto.SignInRequest
-import com.thepan.reservationapiserver.domain.sign.dto.SignInResponse
-import com.thepan.reservationapiserver.domain.sign.dto.SignOutRequest
+import com.thepan.reservationapiserver.domain.sign.dto.*
 import com.thepan.reservationapiserver.domain.sign.service.SignService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import kotlin.math.sign
 
 @RestController
 @RequestMapping("/api/v1/sign")
@@ -31,6 +28,28 @@ class SignApiController(
         request: SignOutRequest
     ): ApiResponse<Unit> {
         signService.signOut(request)
+        return ApiResponse.success()
+    }
+    
+    @PostMapping("/phone")
+    @ResponseStatus(HttpStatus.OK)
+    fun signPhone(
+        @Valid
+        @RequestBody
+        request: PhoneAuthRequest
+    ): ApiResponse<Unit> {
+        signService.sendMobileVerificationCode(request)
+        return ApiResponse.success()
+    }
+    
+    @PostMapping("/phone/check")
+    @ResponseStatus(HttpStatus.OK)
+    fun checkPhone(
+        @Valid
+        @RequestBody
+        request: CheckPhoneAuthRequest
+    ): ApiResponse<Unit> {
+        signService.checkMobileVerificationCode(request)
         return ApiResponse.success()
     }
 }

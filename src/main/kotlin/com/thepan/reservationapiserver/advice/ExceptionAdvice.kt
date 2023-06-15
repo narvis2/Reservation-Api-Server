@@ -90,4 +90,22 @@ class ExceptionAdvice {
     fun duplicateConferenceSeatException(): ApiResponse<Unit> {
         return ApiResponse.failure(-1010, "중복된 좌석입니다.")
     }
+    
+    @ExceptionHandler(NetworkErrorException::class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun networkErrorException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1011, "네트워크가 원활하지 않습니다. 잠시후 다시 시도해주시기 바랍니다.")
+    }
+    
+    @ExceptionHandler(NaverSMSFailureException::class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun naverSMSFailureException(e: NaverSMSFailureException): ApiResponse<Unit> {
+        return ApiResponse.failure(-1012, e.message)
+    }
+    
+    @ExceptionHandler(PhoneAuthCheckFailureException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun phoneAuthCheckFailureException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1013, "휴대폰 인증에 실패하였습니다.")
+    }
 }
