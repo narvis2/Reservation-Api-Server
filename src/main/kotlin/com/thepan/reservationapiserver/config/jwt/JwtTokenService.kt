@@ -23,4 +23,10 @@ class JwtTokenService(
     fun extractAccessTokenSubject(token: String): String = jwtTokenHelper.extractSubject(jwtTokenProperties.secretKey, token)
     
     fun extractRefreshTokenSubject(refreshToken: String): String = jwtTokenHelper.extractSubject(jwtTokenProperties.refreshSecretKey, refreshToken)
+    
+    fun getAccessTokenExpiresTime(): Long = 1000 * jwtTokenProperties.expireTime
+    
+    fun getRefreshTokenExpiresTime(): Long = 1000 * jwtTokenProperties.refreshExpireTime
+    
+    fun removeBearerPrefix(token: String): String = jwtTokenHelper.removeBearer(token)
 }

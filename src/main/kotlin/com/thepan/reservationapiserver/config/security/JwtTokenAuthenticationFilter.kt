@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import mu.KotlinLogging
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
 
@@ -19,9 +20,9 @@ import org.springframework.web.filter.OncePerRequestFilter
  */
 class JwtTokenAuthenticationFilter(
     private val tokenService: JwtTokenService,
-    private val userDetailsService: CustomUserDetailsService
+    private val userDetailsService: CustomUserDetailsService,
+    private val redisTemplate: RedisTemplate<String, Any>,
 ) : OncePerRequestFilter() {
-    private val log = KotlinLogging.logger {}
     
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         val token = request.getHeader(HEADER_AUTHORIZATION)?.takeIf {
@@ -30,8 +31,17 @@ class JwtTokenAuthenticationFilter(
     
         token?.let {
             if (tokenService.validateAccessToken(it)) {
-                log.info("🌸🌸🌸 인증된 Token 👉 $it")
-                setAccessAuthentication(token)
+                // Redis 에 해당 accessToken logout 여부를 확인
+                val isLogout = redisTemplate.opsForValue()[tokenService.removeBearerPrefix(it)] as? String
+                log.info {
+                    "🌸🌸🌸 isLogout 👉 $isLogout"
+                }
+                
+                // Redis 에 "logout"이 없는(되어 있지 않은) 경우 해당 토큰은 정상적으로 작동
+                if (isLogout.isNullOrEmpty()) {
+                    log.info("🌸🌸🌸 인증된 Token 👉 $it")
+                    setAccessAuthentication(token)
+                }
             }
         }
     
@@ -41,6 +51,11 @@ class JwtTokenAuthenticationFilter(
     private fun setAccessAuthentication(token: String) {
         val memberId = tokenService.extractAccessTokenSubject(token)
         val userDetails: CustomUserDetails = userDetailsService.loadUserByUsername(memberId)
+        // SecurityContext 에 Authentication 객체를 저장
         SecurityContextHolder.getContext().authentication = CustomAuthenticationToken(userDetails, userDetails.authorities)
+    }
+    
+    companion object {
+        private val log = KotlinLogging.logger {}
     }
 }

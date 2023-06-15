@@ -7,6 +7,7 @@ import com.thepan.reservationapiserver.config.security.CustomUserDetailsService
 import com.thepan.reservationapiserver.config.security.JwtTokenAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -23,7 +24,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 @EnableMethodSecurity
 class SecurityConfig(
     private val tokenService: JwtTokenService,
-    private val userDetailsService: CustomUserDetailsService
+    private val userDetailsService: CustomUserDetailsService,
+    private val redisTemplate: RedisTemplate<String, Any>
 ) {
     
     @Bean
@@ -57,7 +59,14 @@ class SecurityConfig(
                 it.accessDeniedHandler(CustomAccessDeniedHandler())
                 it.authenticationEntryPoint(CustomAuthenticationEntryPoint())
             }
-            .addFilterBefore(JwtTokenAuthenticationFilter(tokenService, userDetailsService), UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(
+                JwtTokenAuthenticationFilter(
+                    tokenService,
+                    userDetailsService,
+                    redisTemplate
+                ),
+                UsernamePasswordAuthenticationFilter::class.java
+            )
         return http.build()
     }
     
