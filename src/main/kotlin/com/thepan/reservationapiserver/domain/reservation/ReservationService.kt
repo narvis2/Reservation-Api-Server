@@ -11,8 +11,10 @@ import com.thepan.reservationapiserver.domain.seat.entity.TimeType
 import com.thepan.reservationapiserver.domain.seat.repository.SeatRepository
 import com.thepan.reservationapiserver.exception.DuplicateConferenceException
 import com.thepan.reservationapiserver.exception.DuplicateConferenceSeatException
+import com.thepan.reservationapiserver.exception.ReservationNotFoundException
 import com.thepan.reservationapiserver.exception.SeatNotFoundException
 import com.thepan.reservationapiserver.utils.isCheckDuplicatedList
+import com.thepan.reservationapiserver.utils.makeReservationRandomCode
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -33,10 +35,14 @@ class ReservationService(
 
         log.info("🌸 예약 등록 START =========================")
         reservationRepository.save(request.toEntity(seatList))
+        // TODO:: KAKAO 알림톡으로 예약자에게 안내문자 알려주기
+        // TODO:: 사장에겐 Notification 날리기
         log.info("🌸 예약 등록 END =========================")
     }
 
     fun readAll(): List<ReservationAllResponse> = reservationRepository.findAll().toReservationAllResponseList()
+    
+    fun readAllNonAuth(): List<ReservationAllResponse> = reservationRepository.findNonAuth().toReservationAllResponseList()
 
     fun getReservationStatus(condition: ReservationStatusCondition): List<ReservationAllResponse> =
         reservationRepository.findByReservationDate(condition.dateTime.toLocalDate()).toReservationAllResponseList()
@@ -54,6 +60,23 @@ class ReservationService(
 
             leftReservationList.map { it.seatType }
         }
+    }
+    
+    // 📌 마스터가 예약 수락 및 거절을 눌렀을 경우
+    fun updateAuthorizedReservation(id: Long, request: ReservationApprovalCheckRequest) {
+        val reservation = reservationRepository.findById(id).orElseThrow {
+            ReservationNotFoundException()
+        }
+        
+        if (!request.isApproved) {
+            reservationRepository.delete(reservation)
+            // TODO:: 수락 취소된 경우 KAKAO 알림톡으로 알려주기
+            return
+        }
+        
+        reservation.certificationNumber = makeReservationRandomCode()
+        reservationRepository.save(reservation)
+        // TODO:: 수락 성공한 경우 KAKAO 알림톡으로 인증번호와 함께 알려주기
     }
 
     // 📌 중복 예약 체크

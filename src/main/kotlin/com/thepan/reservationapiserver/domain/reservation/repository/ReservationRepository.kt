@@ -11,9 +11,12 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface ReservationRepository : JpaRepository<Reservation, Long> {
+    @Query("select r from Reservation r where r.certificationNumber is null")
+    fun findNonAuth(): List<Reservation>
+    
     @Query("SELECT r FROM Reservation r WHERE CAST(r.reservationDateTime AS date) = :date")
     fun findByReservationDate(date: LocalDate): List<Reservation>
-
+    
     // 📌 내 예약 정보를 가져옴
     @Query("SELECT r FROM Reservation r WHERE r.id = :reservationId AND r.timeType = :timeType AND r.reservationDateTime = :reservationDateTime")
     fun findByReservationIdAndTimeTypeAndDateTime(

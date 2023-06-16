@@ -127,4 +127,10 @@ class ExceptionAdvice {
     fun noticeNotFoundException(): ApiResponse<Unit> {
         return ApiResponse.failure(-1016, "요청하신 공지사항을 찾을 수 없습니다.");
     }
+    
+    @ExceptionHandler(ReservationNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun reservationNotFoundException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1017, "요청하신 예약 정보를 찾을 수 없습니다.");
+    }
 }

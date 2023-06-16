@@ -23,6 +23,8 @@ class Reservation(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var timeType: TimeType,
+    @Column(nullable = true)
+    var certificationNumber: String? = null,
     /**
      * Reservation 에서 ReservationSeat 를 관리하기 위해 설정
      * cascade = [CascadeType.ALL] 👉 부모 Entity 에 대한 변경이 자식 Entity 에 영향을 미치도록
