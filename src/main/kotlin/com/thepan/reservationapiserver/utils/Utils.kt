@@ -33,3 +33,21 @@ fun makeRandomMessage(): String {
     
     return numStr
 }
+
+/**
+ * @author choi young-jun
+ * - 알파벳과 숫자(0~9)의 조합으로 16 자리 String 을 만들어 반환
+ * - 예약 인증 번호로 사용
+ */
+fun makeReservationRandomCode(): String {
+    val characters = ('a'..'z') + ('0'..'9')
+    val rand = Random()
+    var text = ""
+    
+    for (i in 0 until 16) {
+        val randomChar = characters[rand.nextInt(characters.size)]
+        text += randomChar
+    }
+    
+    return text
+}

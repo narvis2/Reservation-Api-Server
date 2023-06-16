@@ -37,7 +37,10 @@ fun List<Reservation>.toReservationAllResponseList(): List<ReservationAllRespons
         phoneNumber = it.phoneNumber,
         reservationDateTime = it.reservationDateTime,
         reservationCount = it.reservationCount,
-        seat = it.seat.map { s -> s.seat }
+        seats = it.seat.map { s -> s.seat }.map { seat ->
+            seat.seatType.type
+        },
+        timeType = it.timeType
     )
 }
 

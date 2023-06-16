@@ -1,6 +1,7 @@
 package com.thepan.reservationapiserver.domain.seat.entity
 
 enum class TimeType(val type: String) {
-    LUNCH("점심"),
-    DINNER("저녁")
+    PART_A("13:00"),
+    PART_B("17:50"),
+    PART_C("20:00")
 }
