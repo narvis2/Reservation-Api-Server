@@ -47,9 +47,14 @@ class SecurityConfig(
                 auth.requestMatchers(
                     "/api/v1/sign/**",
                     "/api/v1/seats/**",
-                    "/api/v1/reservation/seats"
+                    "/api/v1/reservation/seats",
+                    "/api/v1/notices"
                 ).permitAll()
+                    .requestMatchers(HttpMethod.GET, "/image/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/reservation").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/notice").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/v1/notice/{id}").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/v1/notice/{id}").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/api/v1/reservation").hasRole("MASTER")
                     .requestMatchers(HttpMethod.GET, "/api/v1/reservation/status").hasRole("MASTER")
                     .anyRequest() // 위의 요청을 제외한 나머지 요청

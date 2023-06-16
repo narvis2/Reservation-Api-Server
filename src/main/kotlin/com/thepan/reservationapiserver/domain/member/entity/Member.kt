@@ -22,7 +22,7 @@ class Member(
     var phoneNumber: String,
     var password: String,
     @OneToMany(mappedBy = "member", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var roles: MutableSet<MemberRole> = mutableSetOf(),
+    var roles: MutableSet<MemberRole> = mutableSetOf()
 ) : BaseEntity() {
     constructor(
         name: String,

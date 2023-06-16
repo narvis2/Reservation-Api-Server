@@ -5,6 +5,11 @@ import com.thepan.reservationapiserver.domain.member.dto.MyMemberInfoResponse
 import com.thepan.reservationapiserver.domain.member.entity.Member
 import com.thepan.reservationapiserver.domain.member.entity.MemberRole
 import com.thepan.reservationapiserver.domain.member.entity.RoleType
+import com.thepan.reservationapiserver.domain.notice.dto.NoticeAllResponse
+import com.thepan.reservationapiserver.domain.notice.dto.NoticeCreateRequest
+import com.thepan.reservationapiserver.domain.notice.dto.NoticeImageResponse
+import com.thepan.reservationapiserver.domain.notice.entity.Notice
+import com.thepan.reservationapiserver.domain.notice.entity.NoticeImage
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationCreateRequest
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
@@ -90,3 +95,35 @@ private fun List<RoleType>.toRoleType(): RoleType =
         
         else -> RoleType.ROLE_STOP
     }
+
+fun NoticeCreateRequest.toEntity(member: Member): Notice = Notice(
+    title = this.title,
+    content = this.content,
+    member = member
+).apply {
+    addImages(
+        this@toEntity.images.map {
+            NoticeImage(uniqueName = "", originName = it.originalFilename!!)
+        }
+    )
+}
+
+fun List<Notice>.toNoticeAllResponseList(): List<NoticeAllResponse> = map {
+    NoticeAllResponse(
+        id = it.id,
+        title = it.title,
+        content = it.content,
+        member = it.member.toMyMemberInfoResponse(),
+        images = it.images.toNoticeImageResponseList(),
+        createdAt = it.createdAt,
+        modifiedAt = it.modifiedAt
+    )
+}
+
+private fun List<NoticeImage>.toNoticeImageResponseList(): List<NoticeImageResponse> = map {
+    NoticeImageResponse(
+        id = it.id,
+        originName = it.originName,
+        uniqueName = it.uniqueName
+    )
+}
