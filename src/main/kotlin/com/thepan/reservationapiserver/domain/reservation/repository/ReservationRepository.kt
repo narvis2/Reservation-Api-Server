@@ -1,5 +1,6 @@
 package com.thepan.reservationapiserver.domain.reservation.repository
 
+import com.thepan.reservationapiserver.domain.reservation.dto.ReservationClientCountResponseInterface
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
 import com.thepan.reservationapiserver.domain.reservation.entity.ReservationSeat
 import com.thepan.reservationapiserver.domain.seat.entity.TimeType
@@ -12,7 +13,7 @@ import java.time.LocalDateTime
 interface ReservationRepository : JpaRepository<Reservation, Long> {
     @Query("SELECT r FROM Reservation r WHERE CAST(r.reservationDateTime AS date) = :date")
     fun findByReservationDate(date: LocalDate): List<Reservation>
-    
+
     // 📌 내 예약 정보를 가져옴
     @Query("SELECT r FROM Reservation r WHERE r.id = :reservationId AND r.timeType = :timeType AND r.reservationDateTime = :reservationDateTime")
     fun findByReservationIdAndTimeTypeAndDateTime(
@@ -20,7 +21,7 @@ interface ReservationRepository : JpaRepository<Reservation, Long> {
         @Param("timeType") timeType: TimeType,
         @Param("reservationDateTime") reservationDateTime: LocalDateTime
     ): Reservation?
-    
+
     // 📌 예약 중복 체크에 사용됨
     @Query("SELECT r FROM Reservation r WHERE r.name = :name AND r.phoneNumber = :phoneNumber AND r.timeType = :timeType AND r.reservationDateTime = :reservationDateTime")
     fun findByAllCondition(
@@ -29,7 +30,7 @@ interface ReservationRepository : JpaRepository<Reservation, Long> {
         @Param("timeType") timeType: TimeType,
         @Param("reservationDateTime") reservationDateTime: LocalDateTime
     ): Reservation?
-    
+
     /**
      * 📌 지정된 날짜에 예약된 정보 List 가져오기
      * - 좌석 중복 체크에 사용될 것 임
@@ -39,4 +40,14 @@ interface ReservationRepository : JpaRepository<Reservation, Long> {
         @Param("timeType") timeType: TimeType,
         @Param("reservationDateTime") reservationDateTime: LocalDateTime
     ): MutableSet<ReservationSeat>
+
+    /**
+     * 📌 해당 이름과, 전화번호로 예약이 몇번 됐는지 Count List 가져오기
+     * - 받은 파람값이 있으면 해당 손님의 예약 횟수를, 없다면 전체 손님의 예약 횟수를 가져옴
+     */
+    @Query("SELECT r.name AS name , r.phoneNumber AS phoneNumber, count(r.name) AS reservationCount FROM Reservation r WHERE r.name LIKE %:name% AND r.phoneNumber LIKE %:phoneNumber% GROUP BY r.name")
+    fun findByUserNameAndPhoneNumber(
+        @Param("name") name: String,
+        @Param("phoneNumber") phoneNumber: String
+    ): List<ReservationClientCountResponseInterface>
 }
