@@ -1,6 +1,7 @@
 package com.thepan.reservationapiserver.domain.member.entity
 
 import com.thepan.reservationapiserver.domain.base.BaseEntity
+import com.thepan.reservationapiserver.domain.notice.entity.Notice
 import jakarta.persistence.*
 
 @Entity
@@ -23,6 +24,8 @@ class Member(
     var password: String,
     @OneToMany(mappedBy = "member", cascade = [CascadeType.ALL], orphanRemoval = true)
     var roles: MutableSet<MemberRole> = mutableSetOf(),
+    @OneToMany(mappedBy = "member", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var noticeList: MutableList<Notice> = ArrayList()
 ) : BaseEntity() {
     constructor(
         name: String,

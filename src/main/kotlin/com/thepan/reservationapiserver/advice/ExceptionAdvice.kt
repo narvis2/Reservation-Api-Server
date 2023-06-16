@@ -108,4 +108,23 @@ class ExceptionAdvice {
     fun phoneAuthCheckFailureException(): ApiResponse<Unit> {
         return ApiResponse.failure(-1013, "휴대폰 인증에 실패하였습니다.")
     }
+    
+    @ExceptionHandler(UnsupportedImageFormatException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun unsupportedImageFormatException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1014, "지원하는 확장자가 아닙니다.")
+    }
+    
+    @ExceptionHandler(FileUploadFailureException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun fileUploadFailureException(e: FileUploadFailureException): ApiResponse<Unit> {
+        log.error("파일 업로드 실패 에러 👉 ${e.message}")
+        return ApiResponse.failure(-1015, "파일 업로드에 실패하였습니다.");
+    }
+    
+    @ExceptionHandler(NoticeNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun noticeNotFoundException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1016, "요청하신 공지사항을 찾을 수 없습니다.");
+    }
 }
