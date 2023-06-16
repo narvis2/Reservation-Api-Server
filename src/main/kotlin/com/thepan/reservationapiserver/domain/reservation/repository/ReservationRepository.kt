@@ -47,7 +47,7 @@ interface ReservationRepository : JpaRepository<Reservation, Long> {
      */
     @Query("SELECT r.name AS name , r.phoneNumber AS phoneNumber, count(r.name) AS reservationCount FROM Reservation r WHERE r.name LIKE %:name% AND r.phoneNumber LIKE %:phoneNumber% GROUP BY r.name")
     fun findByUserNameAndPhoneNumber(
-        @Param("name") name: String,
-        @Param("phoneNumber") phoneNumber: String
+        @Param("name") name: String?,
+        @Param("phoneNumber") phoneNumber: String?
     ): List<ReservationClientCountResponseInterface>
 }

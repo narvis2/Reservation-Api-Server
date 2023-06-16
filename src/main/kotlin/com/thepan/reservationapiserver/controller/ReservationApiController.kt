@@ -50,7 +50,7 @@ class ReservationApiController(
     @ResponseStatus(HttpStatus.OK)
     fun countReservedClients(
         @Valid
-        request:ReservationClientCountRequest
+        request: ReservationClientCountRequest
     ): ApiResponse<List<ReservationClientCountResponseInterface>> =
         ApiResponse.success(reservationService.getReservationClientCount(request))
 }
