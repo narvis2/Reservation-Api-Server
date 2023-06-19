@@ -60,6 +60,7 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.GET, "/api/v1/reservation/status").hasRole("MASTER")
                     .requestMatchers(HttpMethod.GET, "/api/v1/reservation/non-auth").hasRole("MASTER")
                     .requestMatchers(HttpMethod.PUT, "/api/v1/reservation/check-auth/{id}").hasRole("MASTER")
+                    .requestMatchers(HttpMethod.GET, "/reservation/non-auth/day-time").hasRole("MASTER")
                     .anyRequest() // 위의 요청을 제외한 나머지 요청
                     .authenticated() // 별도의 인가는 필요하지 않지만 인증이 접근할 수 있음
             }

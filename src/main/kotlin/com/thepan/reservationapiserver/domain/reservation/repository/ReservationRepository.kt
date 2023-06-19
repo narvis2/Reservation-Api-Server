@@ -1,5 +1,6 @@
 package com.thepan.reservationapiserver.domain.reservation.repository
 
+import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationClientCountResponseInterface
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
 import com.thepan.reservationapiserver.domain.reservation.entity.ReservationSeat
@@ -13,10 +14,10 @@ import java.time.LocalDateTime
 interface ReservationRepository : JpaRepository<Reservation, Long> {
     @Query("select r from Reservation r where r.certificationNumber is null")
     fun findNonAuth(): List<Reservation>
-    
+
     @Query("SELECT r FROM Reservation r WHERE CAST(r.reservationDateTime AS date) = :date")
     fun findByReservationDate(date: LocalDate): List<Reservation>
-    
+
     // 📌 내 예약 정보를 가져옴
     @Query("SELECT r FROM Reservation r WHERE r.id = :reservationId AND r.timeType = :timeType AND r.reservationDateTime = :reservationDateTime")
     fun findByReservationIdAndTimeTypeAndDateTime(
@@ -53,4 +54,12 @@ interface ReservationRepository : JpaRepository<Reservation, Long> {
         @Param("name") name: String?,
         @Param("phoneNumber") phoneNumber: String?
     ): List<ReservationClientCountResponseInterface>
+
+    /**
+     * 📌 해당 날짜, 해당 시간에 예약 승인 안되어있는 예약 List 가져오기
+     */
+    fun findByTimeTypeAndReservationDateTimeAndCertificationNumberIsNull(
+        timeType: TimeType,
+        reservationDateTime: LocalDateTime
+    ): List<Reservation>
 }
