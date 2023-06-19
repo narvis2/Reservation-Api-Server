@@ -4,6 +4,7 @@ import com.thepan.reservationapiserver.domain.mapper.toEntity
 import com.thepan.reservationapiserver.domain.mapper.toReservationAllResponseList
 import com.thepan.reservationapiserver.domain.mapper.toSeatTypeList
 import com.thepan.reservationapiserver.domain.reservation.dto.*
+import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
 import com.thepan.reservationapiserver.domain.reservation.repository.ReservationRepository
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
@@ -41,8 +42,9 @@ class ReservationService(
     }
 
     fun readAll(): List<ReservationAllResponse> = reservationRepository.findAll().toReservationAllResponseList()
-    
-    fun readAllNonAuth(): List<ReservationAllResponse> = reservationRepository.findNonAuth().toReservationAllResponseList()
+
+    fun readAllNonAuth(): List<ReservationAllResponse> =
+        reservationRepository.findNonAuth().toReservationAllResponseList()
 
     fun getReservationStatus(condition: ReservationStatusCondition): List<ReservationAllResponse> =
         reservationRepository.findByReservationDate(condition.dateTime.toLocalDate()).toReservationAllResponseList()
@@ -61,19 +63,19 @@ class ReservationService(
             leftReservationList.map { it.seatType }
         }
     }
-    
+
     // 📌 마스터가 예약 수락 및 거절을 눌렀을 경우
     fun updateAuthorizedReservation(id: Long, request: ReservationApprovalCheckRequest) {
         val reservation = reservationRepository.findById(id).orElseThrow {
             ReservationNotFoundException()
         }
-        
+
         if (!request.isApproved) {
             reservationRepository.delete(reservation)
             // TODO:: 수락 취소된 경우 KAKAO 알림톡으로 알려주기
             return
         }
-        
+
         reservation.certificationNumber = makeReservationRandomCode()
         reservationRepository.save(reservation)
         // TODO:: 수락 성공한 경우 KAKAO 알림톡으로 인증번호와 함께 알려주기
@@ -142,5 +144,13 @@ class ReservationService(
         request: ReservationClientCountRequest
     ): List<ReservationClientCountResponseInterface> =
         reservationRepository.findByUserNameAndPhoneNumber(request.name, request.phoneNumber)
+
+    fun getReservationDayAndTimeTypeNonAuth(
+        request: ReservationNotApporveRequest
+    ): List<ReservationAllResponse> =
+        reservationRepository.findByTimeTypeAndReservationDateTimeAndCertificationNumberIsNull(
+            request.timeType,
+            request.reservationDateTime
+        ).toReservationAllResponseList()
 
 }
