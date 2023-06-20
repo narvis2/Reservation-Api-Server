@@ -9,6 +9,7 @@ import org.springframework.validation.BindException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.multipart.MultipartException
 
 @RestControllerAdvice
 class ExceptionAdvice {
@@ -132,5 +133,18 @@ class ExceptionAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun reservationNotFoundException(): ApiResponse<Unit> {
         return ApiResponse.failure(-1017, "요청하신 예약 정보를 찾을 수 없습니다.");
+    }
+    
+    @ExceptionHandler(BannerImageNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun bannerImageNotFoundException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1018, "요청하신 배너 이미지를 찾을 수 없습니다.")
+    }
+    
+    // 📌 Multipart Upload 시 용량초과 Exception
+    @ExceptionHandler(MultipartException::class)
+    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+    fun multipartException(): ApiResponse<Unit> {
+        return ApiResponse.failure(-1019, "파일 용량초과, 요청하신 파일이 너무 큽니다.")
     }
 }

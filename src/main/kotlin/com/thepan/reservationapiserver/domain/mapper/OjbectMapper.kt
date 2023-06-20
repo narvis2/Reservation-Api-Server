@@ -1,6 +1,8 @@
 package com.thepan.reservationapiserver.domain.mapper
 
 import com.thepan.reservationapiserver.config.security.CustomUserDetails
+import com.thepan.reservationapiserver.domain.banner.dto.BannerImageAllResponse
+import com.thepan.reservationapiserver.domain.banner.entity.BannerImage
 import com.thepan.reservationapiserver.domain.member.dto.MyMemberInfoResponse
 import com.thepan.reservationapiserver.domain.member.entity.Member
 import com.thepan.reservationapiserver.domain.member.entity.MemberRole
@@ -129,4 +131,8 @@ private fun List<NoticeImage>.toNoticeImageResponseList(): List<NoticeImageRespo
         originName = it.originName,
         uniqueName = it.uniqueName
     )
+}
+
+fun List<BannerImage>.toBannerImageAllResponse(): List<BannerImageAllResponse> = map {
+    BannerImageAllResponse(it.id, it.uniqueName)
 }
