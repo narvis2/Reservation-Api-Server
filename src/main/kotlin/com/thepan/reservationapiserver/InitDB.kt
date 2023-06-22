@@ -1,5 +1,7 @@
 package com.thepan.reservationapiserver
 
+import com.thepan.reservationapiserver.domain.banner.entity.BannerImage
+import com.thepan.reservationapiserver.domain.banner.repository.BannerImageRepository
 import com.thepan.reservationapiserver.domain.member.entity.Member
 import com.thepan.reservationapiserver.domain.member.entity.RoleType
 import com.thepan.reservationapiserver.domain.member.repository.MemberRepository
@@ -18,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional
 class InitDB(
     private val memberRepository: MemberRepository,
     private val roleRepository: RoleRepository,
-    private val bCryptPasswordEncoder: BCryptPasswordEncoder
+    private val bCryptPasswordEncoder: BCryptPasswordEncoder,
+    private val bannerImageRepository: BannerImageRepository
 ) {
     private val log = KotlinLogging.logger {}
     
@@ -27,6 +30,7 @@ class InitDB(
     fun initDb() {
         log.info("🌹 initDB Called 🌹")
         initAdminAndMasterUser()
+        initBannerImage()
     }
     
     private fun initAdminAndMasterUser() {
@@ -56,5 +60,24 @@ class InitDB(
         adminMasterList.add(master)
         
         memberRepository.saveAll(adminMasterList)
+    }
+    
+    private fun initBannerImage() {
+        val bannerImageList = ArrayList<BannerImage>()
+        
+        val bannerImage1 = BannerImage(uniqueName = "", originName = "IMG_9559.JPG")
+        bannerImage1.uniqueName = "deadbbca-36cc-470a-a4f5-c0175c654a62.JPG"
+        
+        val bannerImage2 = BannerImage(uniqueName = "", originName = "IMG_9561.JPG")
+        bannerImage2.uniqueName = "d34db6cc-9ebc-407e-b7aa-1ebef7b2d148.JPG"
+        
+        val bannerImage3 = BannerImage(uniqueName = "", originName = "IMG_9557.JPG")
+        bannerImage3.uniqueName = "8e18e30e-519f-41b4-8b42-aba48b0c1def.JPG"
+    
+        bannerImageList.add(bannerImage1)
+        bannerImageList.add(bannerImage2)
+        bannerImageList.add(bannerImage3)
+        
+        bannerImageRepository.saveAll(bannerImageList)
     }
 }
