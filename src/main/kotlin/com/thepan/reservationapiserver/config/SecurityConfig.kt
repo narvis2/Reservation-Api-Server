@@ -47,7 +47,7 @@ class SecurityConfig(
                 auth.requestMatchers(
                     "/api/v1/sign/**",
                     "/api/v1/seats/**",
-                    "/api/v1/reservation/seats",
+                    "/api/v1/reservation/seats/**",
                     "/api/v1/notices"
                 ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/image/**").permitAll()
