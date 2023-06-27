@@ -1,6 +1,7 @@
 package com.thepan.reservationapiserver.utils
 
-import java.util.Random
+import com.thepan.reservationapiserver.exception.UnsupportedImageFormatException
+import java.util.*
 
 /**
  * @author choi young-jun
@@ -51,3 +52,26 @@ fun makeReservationRandomCode(): String {
     
     return text
 }
+
+fun generateUniqueName(extension: String): String = UUID.randomUUID().toString() + "." + extension
+
+// 이미지 이름에서 확장자를 추출
+fun extractExtension(originName: String): String {
+    try {
+        val ext = originName.substring(originName.lastIndexOf(".") + 1)
+        if (isSupportedFormat(ext))
+            return ext
+    } catch (e: StringIndexOutOfBoundsException) {
+        throw UnsupportedImageFormatException()
+    }
+    
+    throw UnsupportedImageFormatException()
+}
+
+// 지원하는 확장자인지 확인
+private fun isSupportedFormat(ext: String): Boolean = supportedExtension.any {
+    it.equals(ext, ignoreCase = true)
+}
+
+// 해당 이미지가 지원하는 이미지 확장자
+private val supportedExtension = arrayOf("jpg", "jpeg", "gif", "bmp", "png")
