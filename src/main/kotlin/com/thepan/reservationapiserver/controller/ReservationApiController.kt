@@ -44,6 +44,13 @@ class ReservationApiController(
         condition: ReservationStatusCondition
     ): ApiResponse<List<ReservationAllResponse>> =
         ApiResponse.success(reservationService.getReservationStatus(condition))
+    
+    @GetMapping("/reservation/seats/date")
+    fun readReservedDateSeatList(
+        @Valid
+        condition: ReservationTargetDateRequest
+    ): ApiResponse<List<ReservationTargetDateResponse>> =
+        ApiResponse.success(reservationService.getTargetDateReservationSeatList(condition))
 
     @GetMapping("/reservation/seats")
     @ResponseStatus(HttpStatus.OK)

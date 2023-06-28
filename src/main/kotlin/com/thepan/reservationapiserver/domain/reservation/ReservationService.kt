@@ -43,13 +43,29 @@ class ReservationService(
 
     fun readAll(): List<ReservationAllResponse> = reservationRepository.findAll().toReservationAllResponseList()
 
+    // 📌 비승인된 예약 리스트 가져오기
     fun readAllNonAuth(): List<ReservationAllResponse> =
         reservationRepository.findNonAuth().toReservationAllResponseList()
 
     fun getReservationStatus(condition: ReservationStatusCondition): List<ReservationAllResponse> =
         reservationRepository.findByReservationDate(condition.dateTime.toLocalDate()).toReservationAllResponseList()
+    
+    // 📌 PartTime 을 신경쓰지않고 특정 날짜의 남아있는 좌석을 PartTime 별로 분류하여 List 로 가져옴
+    fun getTargetDateReservationSeatList(condition: ReservationTargetDateRequest): List<ReservationTargetDateResponse> {
+        val reservationDateList: ArrayList<ReservationTargetDateResponse> = ArrayList()
+    
+        TimeType.values().forEach { timeType ->
+            val targetSeatList = getTargetReservationSeatList(
+                ReservationSeatListRequest(timeType.name, condition.findDate)
+            )
+            
+            reservationDateList.add(ReservationTargetDateResponse(timeType, targetSeatList))
+        }
+        
+        return reservationDateList
+    }
 
-    // 📌 특정 날짜에 남아있는 좌석 List 가져오기
+    // 📌 특정 날짜의 PartTime 에 남아있는 좌석 List 가져오기
     fun getTargetReservationSeatList(request: ReservationSeatListRequest): List<SeatType> {
         val reservedSeatList = getReservationInfoList(request.timeType, request.reservationDateTime)
         val allSeatList = seatRepository.findAll()
@@ -140,11 +156,13 @@ class ReservationService(
 
     private fun stringToTimeType(timeType: String): TimeType = TimeType.valueOf(timeType)
 
+    // 📌 특정 손님의 예약 횟수 목록 가져오기
     fun getReservationClientCount(
         request: ReservationClientCountRequest
     ): List<ReservationClientCountResponseInterface> =
         reservationRepository.findByUserNameAndPhoneNumber(request.name, request.phoneNumber)
 
+    //📌 특정 날짜에 비승인된 예약 리스트 가져오기
     fun getReservationDayAndTimeTypeNonAuth(
         request: ReservationNotApporveRequest
     ): List<ReservationAllResponse> =
@@ -152,5 +170,4 @@ class ReservationService(
             request.timeType,
             request.reservationDateTime
         ).toReservationAllResponseList()
-
 }
