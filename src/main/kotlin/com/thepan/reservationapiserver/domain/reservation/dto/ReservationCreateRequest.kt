@@ -23,6 +23,10 @@ data class ReservationCreateRequest(
     val reservationCount: Int,
     @field:NotBlank(message = "예약 파트 타임을 입력해주세요.")
     val timeType: String,
+    @field:AssertTrue(message = "이용약관에 모두 동의해주세요.")
+    val isTermAllAgree: Boolean,
+    @field:AssertTrue(message = "본인 인증을 해주세요.")
+    val isUserValidation: Boolean,
     @field:NotNull(message = "예약 좌석을 입력해주세요.")
     @field:Size(min = 1, max = 10)
     val seat: List<String>

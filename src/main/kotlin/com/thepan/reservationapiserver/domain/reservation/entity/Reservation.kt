@@ -23,6 +23,10 @@ class Reservation(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var timeType: TimeType,
+    @Column(nullable = false)
+    var isTermAllAgree: Boolean,
+    @Column(nullable = false)
+    var isUserValidation: Boolean,
     @Column(nullable = true)
     var certificationNumber: String? = null,
     /**
@@ -39,13 +43,17 @@ class Reservation(
         reservationDateTime: LocalDateTime,
         reservationCount: Int,
         timeType: TimeType,
+        isTermAllAgree: Boolean,
+        isUserValidation: Boolean,
         seats: List<Seat>
     ) : this(
         name = name,
         phoneNumber = phoneNumber,
         reservationDateTime = reservationDateTime,
         timeType = timeType,
-        reservationCount = reservationCount
+        reservationCount = reservationCount,
+        isTermAllAgree = isTermAllAgree,
+        isUserValidation = isUserValidation
     ) {
         this.seat = seats.map { s -> ReservationSeat(this, s) }.toMutableSet()
     }

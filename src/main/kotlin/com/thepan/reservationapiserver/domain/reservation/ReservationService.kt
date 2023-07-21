@@ -4,7 +4,6 @@ import com.thepan.reservationapiserver.domain.mapper.toEntity
 import com.thepan.reservationapiserver.domain.mapper.toReservationAllResponseList
 import com.thepan.reservationapiserver.domain.mapper.toSeatTypeList
 import com.thepan.reservationapiserver.domain.reservation.dto.*
-import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
 import com.thepan.reservationapiserver.domain.reservation.repository.ReservationRepository
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType

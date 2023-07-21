@@ -29,6 +29,8 @@ fun ReservationCreateRequest.toEntity(seats: List<Seat>): Reservation = Reservat
     reservationDateTime = this.reservationDateTime,
     reservationCount = this.reservationCount,
     seats = seats,
+    isTermAllAgree = this.isTermAllAgree,
+    isUserValidation = this.isUserValidation,
     timeType = TimeType.valueOf(this.timeType)
 )
 
