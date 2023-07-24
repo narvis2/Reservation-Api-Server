@@ -13,6 +13,7 @@ import com.thepan.reservationapiserver.exception.DuplicateConferenceException
 import com.thepan.reservationapiserver.exception.DuplicateConferenceSeatException
 import com.thepan.reservationapiserver.exception.ReservationNotFoundException
 import com.thepan.reservationapiserver.exception.SeatNotFoundException
+import com.thepan.reservationapiserver.utils.designateTime
 import com.thepan.reservationapiserver.utils.isCheckDuplicatedList
 import com.thepan.reservationapiserver.utils.makeReservationRandomCode
 import mu.KotlinLogging
@@ -55,7 +56,7 @@ class ReservationService(
     
         TimeType.values().forEach { timeType ->
             val targetSeatList = getTargetReservationSeatList(
-                ReservationSeatListRequest(timeType.name, condition.findDate)
+                ReservationSeatListRequest(timeType.name, designateTime(timeType.type, condition.findDate))
             )
             
             reservationDateList.add(ReservationTargetDateResponse(timeType, targetSeatList))
