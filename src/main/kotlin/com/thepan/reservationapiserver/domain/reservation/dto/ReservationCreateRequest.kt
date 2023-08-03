@@ -29,5 +29,6 @@ data class ReservationCreateRequest(
     val isUserValidation: Boolean,
     @field:NotNull(message = "예약 좌석을 입력해주세요.")
     @field:Size(min = 1, max = 10)
-    val seat: List<String>
+    val seat: List<String>,
+    val fcmToken: String?
 )

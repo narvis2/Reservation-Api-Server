@@ -55,6 +55,9 @@ dependencies {
     
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     
+    // Firebase
+    implementation("com.google.firebase:firebase-admin:9.2.0")
+    
     runtimeOnly("com.h2database:h2")
     
     testImplementation("org.springframework.boot:spring-boot-starter-test")

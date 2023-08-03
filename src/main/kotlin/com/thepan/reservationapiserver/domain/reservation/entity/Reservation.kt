@@ -29,6 +29,8 @@ class Reservation(
     var isUserValidation: Boolean,
     @Column(nullable = true)
     var certificationNumber: String? = null,
+    @Column(nullable = true)
+    var fcmToken: String?,
     /**
      * Reservation 에서 ReservationSeat 를 관리하기 위해 설정
      * cascade = [CascadeType.ALL] 👉 부모 Entity 에 대한 변경이 자식 Entity 에 영향을 미치도록
@@ -45,6 +47,7 @@ class Reservation(
         timeType: TimeType,
         isTermAllAgree: Boolean,
         isUserValidation: Boolean,
+        fcmToken: String?,
         seats: List<Seat>
     ) : this(
         name = name,
@@ -53,6 +56,7 @@ class Reservation(
         timeType = timeType,
         reservationCount = reservationCount,
         isTermAllAgree = isTermAllAgree,
+        fcmToken = fcmToken,
         isUserValidation = isUserValidation
     ) {
         this.seat = seats.map { s -> ReservationSeat(this, s) }.toMutableSet()
