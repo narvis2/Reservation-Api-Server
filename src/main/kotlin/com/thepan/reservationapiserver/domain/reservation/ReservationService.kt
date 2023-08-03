@@ -1,5 +1,8 @@
 package com.thepan.reservationapiserver.domain.reservation
 
+import com.thepan.reservationapiserver.domain.fcm.dto.FCMNotificationRequest
+import com.thepan.reservationapiserver.domain.fcm.enum.NotiType
+import com.thepan.reservationapiserver.domain.fcm.service.FCMNotificationService
 import com.thepan.reservationapiserver.domain.mapper.toEntity
 import com.thepan.reservationapiserver.domain.mapper.toReservationAllResponseList
 import com.thepan.reservationapiserver.domain.mapper.toSeatTypeList
@@ -24,18 +27,31 @@ import java.time.LocalDateTime
 @Service
 class ReservationService(
     private val reservationRepository: ReservationRepository,
-    private val seatRepository: SeatRepository
+    private val seatRepository: SeatRepository,
+    private val fcmNotificationService: FCMNotificationService
 ) {
     private val log = KotlinLogging.logger {}
 
     @Transactional
     fun create(request: ReservationCreateRequest) {
+        log.info("🌸 FcmToken 👉 ${request.fcmToken}")
         checkIsDuplicateConference(request)
         val seatList = checkIsValidSeatName(request)
         checkIsDuplicateSeat(request)
 
         log.info("🌸 예약 등록 START =========================")
-        reservationRepository.save(request.toEntity(seatList))
+        val reservation = reservationRepository.save(request.toEntity(seatList))
+        
+        // 예약자에게 NOTIFICATION 날리기
+        fcmNotificationService.sendNotificationReservation(
+            FCMNotificationRequest(
+                targetId = reservation.id,
+                title = "[우회담] 예약 완료",
+                body = "우회담에 예약 신청이 완료되었습니다. SMS 문자를 확인해 주세요.",
+                data = mapOf("type" to NotiType.NOTI_A.type)
+            )
+        )
+        
         // TODO:: KAKAO 알림톡으로 예약자에게 안내문자 알려주기
         // TODO:: 사장에겐 Notification 날리기
         log.info("🌸 예약 등록 END =========================")

@@ -31,6 +31,7 @@ fun ReservationCreateRequest.toEntity(seats: List<Seat>): Reservation = Reservat
     seats = seats,
     isTermAllAgree = this.isTermAllAgree,
     isUserValidation = this.isUserValidation,
+    fcmToken = this.fcmToken,
     timeType = TimeType.valueOf(this.timeType)
 )
 

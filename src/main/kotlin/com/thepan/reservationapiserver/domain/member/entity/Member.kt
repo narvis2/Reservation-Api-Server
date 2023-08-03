@@ -21,6 +21,8 @@ class Member(
     @Column(nullable = false, length = 11)
     var phoneNumber: String,
     var password: String,
+    @Column(nullable = true)
+    var fcmToken: String?,
     @OneToMany(mappedBy = "member", cascade = [CascadeType.ALL], orphanRemoval = true)
     var roles: MutableSet<MemberRole> = mutableSetOf()
 ) : BaseEntity() {
@@ -29,11 +31,13 @@ class Member(
         email: String,
         phoneNumber: String,
         password: String,
+        fcmToken: String?,
         roles: List<Role>
     ) : this(
         name = name,
         email = email,
         phoneNumber = phoneNumber,
+        fcmToken = fcmToken,
         password = password
     ) {
         this.roles = roles.map { r -> MemberRole(this, r) }.toMutableSet()
