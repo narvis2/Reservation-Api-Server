@@ -73,6 +73,18 @@ class InitDB(
             member = master,
         )
 
+        val noticeEntity2 = Notice(
+            title = "우회담2 입니다.",
+            content = "잘 부탁드려요.",
+            member = master,
+        )
+
+        val noticeEntity3 = Notice(
+            title = "우회담3 입니다.",
+            content = "잘 부탁드려요.",
+            member = master,
+        )
+
         val noticeImage = NoticeImage(
             uniqueName = "",
             originName = "IMG_9559.JPG",
@@ -80,9 +92,36 @@ class InitDB(
             initNotice(noticeEntity)
         }
 
+        noticeImage.uniqueName = "deadbbca-36cc-470a-a4f5-c0175c654a62.JPG"
+
+        val noticeImage2 = NoticeImage(
+            uniqueName = "",
+            originName = "IMG_9561.JPG",
+        ).apply {
+            initNotice(noticeEntity)
+        }
+
+        noticeImage2.uniqueName = "d34db6cc-9ebc-407e-b7aa-1ebef7b2d148.JPG"
+
+        val noticeImage3 = NoticeImage(
+            uniqueName = "",
+            originName = "IMG_9557.JPG",
+        ).apply {
+            initNotice(noticeEntity)
+        }
+
+        noticeImage3.uniqueName = "8e18e30e-519f-41b4-8b42-aba48b0c1def.JPG"
+
+
+
         noticeEntity.addImages(listOf(noticeImage))
+        noticeEntity2.addImages(listOf(noticeImage, noticeImage2))
+        noticeEntity3.addImages(listOf(noticeImage, noticeImage2, noticeImage3))
+
 
         noticeRepository.save(noticeEntity)
+        noticeRepository.save(noticeEntity2)
+        noticeRepository.save(noticeEntity3)
     }
 
     private fun initBannerImage() {
