@@ -45,7 +45,9 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth -> // 인증, 인가 설정
                 auth.requestMatchers(
-                    "/api/v1/sign/**",
+                    "/api/v1/sign/signIn",
+                    "/api/v1/sign/phone",
+                    "/api/v1/sign/phone/check",
                     "/api/v1/seats/**",
                     "/api/v1/reservation/seats/**",
                     "/api/v1/notices"
