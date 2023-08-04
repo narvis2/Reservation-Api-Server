@@ -1,6 +1,5 @@
 package com.thepan.reservationapiserver.domain.sign.service
 
-import com.thepan.reservationapiserver.config.jwt.JwtTokenHelper
 import com.thepan.reservationapiserver.config.jwt.JwtTokenService
 import com.thepan.reservationapiserver.domain.member.entity.Member
 import com.thepan.reservationapiserver.domain.member.repository.MemberRepository
@@ -42,14 +41,14 @@ class SignService(
     }
     
     @Transactional(readOnly = true)
-    fun signOut(request: SignOutRequest) {
+    fun signOut(accessToken: String) {
         // Token 유효성 검사
-        if (!jwtTokenService.validateAccessToken(JwtTokenHelper.TYPE + request.accessToken)) {
+        if (!jwtTokenService.validateAccessToken(accessToken)) {
             throw AuthenticationEntryPointException()
         }
         
         // Token 에서 subject 추출
-        val memberId = jwtTokenService.extractAccessTokenSubject(JwtTokenHelper.TYPE + request.accessToken)
+        val memberId = jwtTokenService.extractAccessTokenSubject(accessToken)
         
         // 추출한 subject 를 바탕으로 Member 조회
         val member = memberRepository.findById(
@@ -65,7 +64,8 @@ class SignService(
     
         // 해당 Access Token 유효시간을 가지고 와서 BlackList 에 저장
         val expiration = jwtTokenService.getAccessTokenExpiresTime()
-        redisTemplate.opsForValue().set(request.accessToken, "logout", expiration, TimeUnit.MILLISECONDS)
+        val removeBearerToken = jwtTokenService.removeBearerPrefix(accessToken)
+        redisTemplate.opsForValue().set(removeBearerToken, "logout", expiration, TimeUnit.MILLISECONDS)
     }
     
     fun sendMobileVerificationCode(request: PhoneAuthRequest) {
