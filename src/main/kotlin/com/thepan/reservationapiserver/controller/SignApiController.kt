@@ -1,10 +1,8 @@
 package com.thepan.reservationapiserver.controller
 
-import com.thepan.reservationapiserver.config.jwt.JwtTokenHelper.Companion.HEADER_AUTHORIZATION
 import com.thepan.reservationapiserver.domain.base.ApiResponse
 import com.thepan.reservationapiserver.domain.sign.dto.*
 import com.thepan.reservationapiserver.domain.sign.service.SignService
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -25,10 +23,9 @@ class SignApiController(
     @PostMapping("/signOut")
     @ResponseStatus(HttpStatus.OK)
     fun signOut(
-        httpServletRequest: HttpServletRequest
+        @RequestHeader("Authorization") authorizationHeader: String
     ): ApiResponse<Unit> {
-        val accessToken = httpServletRequest.getHeader(HEADER_AUTHORIZATION)
-        signService.signOut(accessToken)
+        signService.signOut(authorizationHeader)
         return ApiResponse.success()
     }
     
