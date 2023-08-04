@@ -64,7 +64,8 @@ class SignService(
     
         // 해당 Access Token 유효시간을 가지고 와서 BlackList 에 저장
         val expiration = jwtTokenService.getAccessTokenExpiresTime()
-        redisTemplate.opsForValue().set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS)
+        val removeBearerToken = jwtTokenService.removeBearerPrefix(accessToken)
+        redisTemplate.opsForValue().set(removeBearerToken, "logout", expiration, TimeUnit.MILLISECONDS)
     }
     
     fun sendMobileVerificationCode(request: PhoneAuthRequest) {
