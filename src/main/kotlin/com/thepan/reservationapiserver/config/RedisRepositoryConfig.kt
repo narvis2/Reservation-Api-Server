@@ -22,8 +22,13 @@ class RedisRepositoryConfig(
      * - RedisProperties 로 application.yml 에 저장한 host, post를 가지고 와서 연결
      */
     @Bean
-    fun redisConnectionFactory(): RedisConnectionFactory =
-        LettuceConnectionFactory(redisProperties.host, redisProperties.port)
+    fun redisConnectionFactory(): RedisConnectionFactory {
+        val lettuceConnectionFactory = LettuceConnectionFactory(redisProperties.host, redisProperties.port)
+        lettuceConnectionFactory.setPassword("1324")
+
+        return lettuceConnectionFactory
+    }
+
     
     
     // setKeySerializer, setValueSerializer 설정으로 redis-cli를 통해 직접 데이터를 보는게 가능

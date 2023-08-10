@@ -58,7 +58,7 @@ dependencies {
     // Firebase
     implementation("com.google.firebase:firebase-admin:9.2.0")
     
-    runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
