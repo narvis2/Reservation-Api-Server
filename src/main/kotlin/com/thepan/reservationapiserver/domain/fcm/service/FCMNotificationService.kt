@@ -40,7 +40,9 @@ class FCMNotificationService(
         }
         
         targetMaster.fcmToken?.let { token ->
-            sendFCMPush(token, request.title, request.body, request.data)
+            if (targetMaster.isPushEnable) {
+                sendFCMPush(token, request.title, request.body, request.data)
+            }
         } ?: throw AuthenticationEntryPointException()
     }
     

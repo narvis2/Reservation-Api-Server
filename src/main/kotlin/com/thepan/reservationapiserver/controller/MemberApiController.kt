@@ -1,6 +1,7 @@
 package com.thepan.reservationapiserver.controller
 
 import com.thepan.reservationapiserver.domain.base.ApiResponse
+import com.thepan.reservationapiserver.domain.member.dto.MemberUpdateEnablePushRequest
 import com.thepan.reservationapiserver.domain.member.dto.MemberUpdateFcmTokenRequest
 import com.thepan.reservationapiserver.domain.member.dto.MyMemberInfoResponse
 import com.thepan.reservationapiserver.domain.member.service.MemberService
@@ -25,6 +26,16 @@ class MemberApiController(
         request: MemberUpdateFcmTokenRequest
     ): ApiResponse<Unit> {
         memberService.updateFcmToken(request)
+        return ApiResponse.success()
+    }
+    
+    @PutMapping("/member/push")
+    @ResponseStatus(HttpStatus.OK)
+    fun updateIsEnablePush(
+        @RequestBody
+        request: MemberUpdateEnablePushRequest
+    ): ApiResponse<Unit> {
+        memberService.updateEnablePush(request)
         return ApiResponse.success()
     }
 }
