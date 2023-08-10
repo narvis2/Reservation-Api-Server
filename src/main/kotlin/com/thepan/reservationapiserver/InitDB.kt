@@ -32,9 +32,9 @@ class InitDB(
     @EventListener(ApplicationReadyEvent::class)
     @Transactional
     fun initDb() {
-        log.info("🌹 initDB Called 🌹")
-        initAdminAndMasterUser()
-        initBannerImage()
+//        log.info("🌹 initDB Called 🌹")
+//        initAdminAndMasterUser()
+//        initBannerImage()
     }
 
     private fun initAdminAndMasterUser() {
