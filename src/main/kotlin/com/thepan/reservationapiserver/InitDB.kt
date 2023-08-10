@@ -46,6 +46,7 @@ class InitDB(
             phoneNumber = "01022696141",
             password = bCryptPasswordEncoder.encode("dudwns@651342"),
             fcmToken = null,
+            isPushEnable = true,
             roles = listOf(
                 roleRepository.findByRoleType(RoleType.ROLE_ADMIN) ?: throw RoleNotFoundException()
             )
@@ -58,6 +59,7 @@ class InitDB(
             phoneNumber = "01022696141",
             password = bCryptPasswordEncoder.encode("dudwns@651342"),
             fcmToken = null,
+            isPushEnable = true,
             roles = listOf(
                 roleRepository.findByRoleType(RoleType.ROLE_ADMIN) ?: throw RoleNotFoundException(),
                 roleRepository.findByRoleType(RoleType.ROLE_MASTER) ?: throw RoleNotFoundException()

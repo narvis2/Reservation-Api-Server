@@ -2,6 +2,7 @@ package com.thepan.reservationapiserver.domain.member.service
 
 import com.thepan.reservationapiserver.config.security.SecurityUtils
 import com.thepan.reservationapiserver.domain.mapper.toMyMemberInfoResponse
+import com.thepan.reservationapiserver.domain.member.dto.MemberUpdateEnablePushRequest
 import com.thepan.reservationapiserver.domain.member.dto.MemberUpdateFcmTokenRequest
 import com.thepan.reservationapiserver.domain.member.dto.MyMemberInfoResponse
 import com.thepan.reservationapiserver.domain.member.entity.Member
@@ -22,6 +23,14 @@ class MemberService(
         val member = getMemberToSecurity()
         
         member.fcmToken = request.fcmToken
+        memberRepository.save(member)
+    }
+    
+    @Transactional
+    fun updateEnablePush(request: MemberUpdateEnablePushRequest) {
+        val member = getMemberToSecurity()
+        
+        member.isPushEnable = request.isEnablePush
         memberRepository.save(member)
     }
     

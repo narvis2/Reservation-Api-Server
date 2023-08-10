@@ -82,7 +82,9 @@ private fun MutableSet<MemberRole>.toAuthorities(): Set<GrantedAuthority> = stre
 fun Member.toMyMemberInfoResponse(): MyMemberInfoResponse = MyMemberInfoResponse(
     id = id,
     email = email,
+    name = name,
     phoneNumber = phoneNumber,
+    isEnablePush = isPushEnable,
     role = roles.toRoleTypeList().toRoleType()
 )
 
