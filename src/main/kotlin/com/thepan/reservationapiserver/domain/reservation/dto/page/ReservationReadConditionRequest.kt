@@ -1,4 +1,4 @@
-package com.thepan.reservationapiserver.domain.reservation.dto
+package com.thepan.reservationapiserver.domain.reservation.dto.page
 
 import com.thepan.reservationapiserver.domain.reservation.dto.enum.ReservationFilterType
 import jakarta.validation.constraints.NotNull
