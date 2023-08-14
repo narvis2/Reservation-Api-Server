@@ -24,7 +24,7 @@ class RedisRepositoryConfig(
     @Bean
     fun redisConnectionFactory(): RedisConnectionFactory {
         val lettuceConnectionFactory = LettuceConnectionFactory(redisProperties.host, redisProperties.port)
-        lettuceConnectionFactory.setPassword("1324")
+//        lettuceConnectionFactory.setPassword("1324")
 
         return lettuceConnectionFactory
     }
