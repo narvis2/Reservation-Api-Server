@@ -32,8 +32,8 @@ class SecurityConfig(
     fun webSecurityCustomizer(): WebSecurityCustomizer {
         return WebSecurityCustomizer {
             it.ignoring()
-                .requestMatchers(AntPathRequestMatcher("/h2-console/**"))
                 .requestMatchers(AntPathRequestMatcher("/exception/**"))
+//                .requestMatchers(AntPathRequestMatcher("/h2-console/**"))
         }
     }
     
