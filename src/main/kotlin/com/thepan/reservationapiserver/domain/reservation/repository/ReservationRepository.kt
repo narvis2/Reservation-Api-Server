@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-interface ReservationRepository : JpaRepository<Reservation, Long> {
+interface ReservationRepository : JpaRepository<Reservation, Long>, CustomReservationRepository {
     @Query("select r from Reservation r where r.certificationNumber is null")
     fun findNonAuth(): List<Reservation>
 
