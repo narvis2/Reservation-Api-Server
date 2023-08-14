@@ -3,7 +3,8 @@ package com.thepan.reservationapiserver.controller
 import com.thepan.reservationapiserver.domain.base.ApiResponse
 import com.thepan.reservationapiserver.domain.reservation.ReservationService
 import com.thepan.reservationapiserver.domain.reservation.dto.*
-import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationListResponse
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationReadConditionRequest
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -84,4 +85,12 @@ class ReservationApiController(
     @ResponseStatus(HttpStatus.OK)
     fun readDayAndTimeTypeNonAuth(@Valid request: ReservationNotApporveRequest): ApiResponse<List<ReservationAllResponse>> =
         ApiResponse.success(reservationService.getReservationDayAndTimeTypeNonAuth(request))
+    
+    @GetMapping("/reservation/filter")
+    @ResponseStatus(HttpStatus.OK)
+    fun readConditionFilter(
+        @Valid
+        condition: ReservationReadConditionRequest
+    ): ApiResponse<ReservationListResponse> =
+        ApiResponse.success(reservationService.readPageNationReservationList(condition))
 }

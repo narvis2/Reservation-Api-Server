@@ -14,11 +14,14 @@ import com.thepan.reservationapiserver.domain.notice.entity.Notice
 import com.thepan.reservationapiserver.domain.notice.entity.NoticeImage
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationCreateRequest
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationConditionResponse
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationListResponse
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
 import com.thepan.reservationapiserver.domain.seat.entity.TimeType
 import com.thepan.reservationapiserver.exception.SeatNotFoundException
+import org.springframework.data.domain.Page
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.util.stream.Collectors
@@ -141,3 +144,10 @@ private fun List<NoticeImage>.toNoticeImageResponseList(): List<NoticeImageRespo
 fun List<BannerImage>.toBannerImageAllResponse(): List<BannerImageAllResponse> = map {
     BannerImageAllResponse(it.id, it.uniqueName)
 }
+
+fun Page<ReservationConditionResponse>.toReservationListResponse(): ReservationListResponse = ReservationListResponse(
+    totalCount = this.totalElements,
+    totalPages = this.totalPages,
+    hasNext = this.hasNext(),
+    reservationList = this.content,
+)

@@ -5,8 +5,11 @@ import com.thepan.reservationapiserver.domain.fcm.enum.NotiType
 import com.thepan.reservationapiserver.domain.fcm.service.FCMNotificationService
 import com.thepan.reservationapiserver.domain.mapper.toEntity
 import com.thepan.reservationapiserver.domain.mapper.toReservationAllResponseList
+import com.thepan.reservationapiserver.domain.mapper.toReservationListResponse
 import com.thepan.reservationapiserver.domain.mapper.toSeatTypeList
 import com.thepan.reservationapiserver.domain.reservation.dto.*
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationListResponse
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationReadConditionRequest
 import com.thepan.reservationapiserver.domain.reservation.repository.ReservationRepository
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
@@ -177,7 +180,7 @@ class ReservationService(
         request: ReservationClientCountRequest
     ): List<ReservationClientCountResponseInterface> =
         reservationRepository.findByUserNameAndPhoneNumber(request.name, request.phoneNumber)
-
+    
     //📌 특정 날짜에 비승인된 예약 리스트 가져오기
     fun getReservationDayAndTimeTypeNonAuth(
         request: ReservationNotApporveRequest
@@ -186,4 +189,7 @@ class ReservationService(
             request.timeType,
             request.reservationDateTime
         ).toReservationAllResponseList()
+    
+    fun readPageNationReservationList(condition: ReservationReadConditionRequest): ReservationListResponse =
+        reservationRepository.findAllByCondition(condition).toReservationListResponse()
 }
