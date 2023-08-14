@@ -58,6 +58,10 @@ dependencies {
     // Firebase
     implementation("com.google.firebase:firebase-admin:9.2.0")
     
+    // 개발기 - h2 db 설정
+//    runtimeOnly("com.h2database:h2")
+    
+    // MariaDB 설정
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     
     testImplementation("org.springframework.boot:spring-boot-starter-test")
