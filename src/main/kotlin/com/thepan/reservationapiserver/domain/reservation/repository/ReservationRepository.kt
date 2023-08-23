@@ -1,6 +1,5 @@
 package com.thepan.reservationapiserver.domain.reservation.repository
 
-import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationClientCountResponseInterface
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
 import com.thepan.reservationapiserver.domain.reservation.entity.ReservationSeat
@@ -17,6 +16,11 @@ interface ReservationRepository : JpaRepository<Reservation, Long>, CustomReserv
 
     @Query("SELECT r FROM Reservation r WHERE CAST(r.reservationDateTime AS date) = :date")
     fun findByReservationDate(date: LocalDate): List<Reservation>
+    
+    @Query("SELECT r FROM Reservation r WHERE r.certificationNumber = :certificationNumber")
+    fun findByCertificationNumber(
+        @Param("certificationNumber") certificationNumber: String
+    ): Reservation?
 
     // 📌 내 예약 정보를 가져옴
     @Query("SELECT r FROM Reservation r WHERE r.id = :reservationId AND r.timeType = :timeType AND r.reservationDateTime = :reservationDateTime")
