@@ -4,33 +4,24 @@ spring:
     include: secret
   jpa:
     show-sql: true
-    hibernate:
-      ddl-auto: validate
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MariaDBDialect
         format_sql: true
-#    defer-datasource-initialization: true
+    defer-datasource-initialization: true
+
   datasource:
-    url: jdbc:mariadb://svc.sel4.cloudtype.app:31805/reservation
-    username: root
-    password: 1234
-    driver-class-name: org.mariadb.jdbc.Driver
-#    h2 설정
-#    url: jdbc:h2:mem:testreservation
-#    username: sa
-#    password:
-#    driver-class-name: org.h2.Driver
-#  h2:
-#    console:
-#      enabled: true
-#      path: /h2-console
+    url: jdbc:h2:mem:testreservation
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   data:
     redis:
-      host: svc.sel3.cloudtype.app
-      port: 31076
-#      host: localhost
-#      port: 6379
+      host: localhost
+      port: 6379
 
   servlet.multipart.max-file-size: 20MB
   servlet.multipart.max-request-size: 25MB

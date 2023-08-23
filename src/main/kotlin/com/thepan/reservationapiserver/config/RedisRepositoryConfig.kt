@@ -25,7 +25,7 @@ class RedisRepositoryConfig(
     @Bean
     fun redisConnectionFactory(): RedisConnectionFactory {
         val redisStandaloneConfiguration = RedisStandaloneConfiguration(redisProperties.host, redisProperties.port)
-        redisStandaloneConfiguration.password = RedisPassword.of("1324")
+//        redisStandaloneConfiguration.password = RedisPassword.of("1324")
     
         return LettuceConnectionFactory(redisStandaloneConfiguration)
     }
