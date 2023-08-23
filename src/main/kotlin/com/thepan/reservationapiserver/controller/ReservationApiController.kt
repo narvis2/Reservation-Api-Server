@@ -27,6 +27,17 @@ class ReservationApiController(
 
         return ApiResponse.success()
     }
+    
+    @GetMapping("/reservation/{id}")
+    fun read(
+        @PathVariable id: Long
+    ): ApiResponse<ReservationDetailResponse> = ApiResponse.success(reservationService.read(id))
+    
+    @GetMapping("/reservation/user")
+    fun readByUser(
+        @Valid
+        request: ReservationDetailByUserRequest
+    ): ApiResponse<ReservationDetailResponse> = ApiResponse.success(reservationService.readByUser(request))
 
     @GetMapping("/reservation")
     @ResponseStatus(HttpStatus.OK)
