@@ -50,13 +50,15 @@ class SecurityConfig(
                     "/api/v1/sign/phone/check",
                     "/api/v1/seats/**",
                     "/api/v1/reservation/seats/**",
-                    "/api/v1/notices"
+                    "/api/v1/notices",
+                    "/api/v1/reservation/user"
                 ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/image/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/reservation").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/banner/images").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/reservation/filter").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/api/v1/reservation/check-auth/{id}").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/reservation/{id}").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.POST, "/api/v1/notice").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/api/v1/notice/{id}").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/api/v1/notice/{id}").hasRole("ADMIN")

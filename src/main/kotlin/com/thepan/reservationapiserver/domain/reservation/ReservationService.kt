@@ -3,13 +3,11 @@ package com.thepan.reservationapiserver.domain.reservation
 import com.thepan.reservationapiserver.domain.fcm.dto.FCMNotificationRequest
 import com.thepan.reservationapiserver.domain.fcm.enum.NotiType
 import com.thepan.reservationapiserver.domain.fcm.service.FCMNotificationService
-import com.thepan.reservationapiserver.domain.mapper.toEntity
-import com.thepan.reservationapiserver.domain.mapper.toReservationAllResponseList
-import com.thepan.reservationapiserver.domain.mapper.toReservationListResponse
-import com.thepan.reservationapiserver.domain.mapper.toSeatTypeList
+import com.thepan.reservationapiserver.domain.mapper.*
 import com.thepan.reservationapiserver.domain.reservation.dto.*
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationListResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationReadConditionRequest
+import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
 import com.thepan.reservationapiserver.domain.reservation.repository.ReservationRepository
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
@@ -54,18 +52,25 @@ class ReservationService(
                 data = mapOf("type" to NotiType.NOTI_A.type)
             )
         )
-        
+    
         // TODO:: KAKAO 알림톡으로 예약자에게 안내문자 알려주기
         // TODO:: 사장에겐 Notification 날리기
         log.info("🌸 예약 등록 END =========================")
     }
-
+    
+    // 📌 마스터가 유저의 예약 정보를 가져옴 (인증, 인가 API)
+    fun read(id: Long): ReservationDetailResponse = getReservationById(id).toReservationDetailResponse()
+    
+    // 📌 예약 승인된 유저가 예약 번호를 바탕으로 예약 정보를 가져옴 (비인증 API)
+    fun readByUser(request: ReservationDetailByUserRequest): ReservationDetailResponse =
+        reservationRepository.findByCertificationNumber(request.certificationNumber)?.toReservationDetailResponse() ?: throw ReservationNotFoundException()
+    
     fun readAll(): List<ReservationAllResponse> = reservationRepository.findAll().toReservationAllResponseList()
-
+    
     // 📌 비승인된 예약 리스트 가져오기
     fun readAllNonAuth(): List<ReservationAllResponse> =
         reservationRepository.findNonAuth().toReservationAllResponseList()
-
+    
     fun getReservationStatus(condition: ReservationStatusCondition): List<ReservationAllResponse> =
         reservationRepository.findByReservationDate(condition.dateTime.toLocalDate()).toReservationAllResponseList()
     
@@ -100,10 +105,9 @@ class ReservationService(
     }
 
     // 📌 마스터가 예약 수락 및 거절을 눌렀을 경우
+    @Transactional
     fun updateAuthorizedReservation(id: Long, request: ReservationApprovalCheckRequest) {
-        val reservation = reservationRepository.findById(id).orElseThrow {
-            ReservationNotFoundException()
-        }
+        val reservation = getReservationById(id)
 
         if (!request.isApproved) {
             reservationRepository.delete(reservation)
@@ -165,16 +169,6 @@ class ReservationService(
             throw DuplicateConferenceSeatException()
     }
 
-    private fun getReservationInfoList(
-        timeType: String,
-        reservationDateTime: LocalDateTime
-    ): List<Seat> = reservationRepository.findByTimeTypeAndDateTime(
-        stringToTimeType(timeType),
-        reservationDateTime
-    ).map { it.seat }
-
-    private fun stringToTimeType(timeType: String): TimeType = TimeType.valueOf(timeType)
-
     // 📌 특정 손님의 예약 횟수 목록 가져오기
     fun getReservationClientCount(
         request: ReservationClientCountRequest
@@ -192,4 +186,18 @@ class ReservationService(
     
     fun readPageNationReservationList(condition: ReservationReadConditionRequest): ReservationListResponse =
         reservationRepository.findAllByCondition(condition).toReservationListResponse()
+    
+    private fun getReservationById(id: Long): Reservation = reservationRepository.findById(id).orElseThrow {
+        ReservationNotFoundException()
+    }
+    
+    private fun getReservationInfoList(
+        timeType: String,
+        reservationDateTime: LocalDateTime
+    ): List<Seat> = reservationRepository.findByTimeTypeAndDateTime(
+        stringToTimeType(timeType),
+        reservationDateTime
+    ).map { it.seat }
+    
+    private fun stringToTimeType(timeType: String): TimeType = TimeType.valueOf(timeType)
 }
