@@ -44,7 +44,7 @@ class SignService(
     fun signOut(accessToken: String) {
         // Token 유효성 검사
         if (!jwtTokenService.validateAccessToken(accessToken)) {
-            throw AuthenticationEntryPointException()
+            return
         }
         
         // Token 에서 subject 추출
@@ -66,6 +66,28 @@ class SignService(
         val expiration = jwtTokenService.getAccessTokenExpiresTime()
         val removeBearerToken = jwtTokenService.removeBearerPrefix(accessToken)
         redisTemplate.opsForValue().set(removeBearerToken, "logout", expiration, TimeUnit.MILLISECONDS)
+    }
+    
+    @Transactional(readOnly = true)
+    fun refreshToken(refreshToken: String): RefreshTokenResponse {
+        if (!jwtTokenService.validateRefreshToken(refreshToken)) {
+            throw RefreshAuthenticationEntryPointException()
+        }
+    
+        val memberId = jwtTokenService.extractRefreshTokenSubject(refreshToken)
+        val member = memberRepository.findById(
+            memberId.toLong()
+        ).orElseThrow {
+            MemberNotFoundException()
+        }
+    
+        // 이미 로그아웃 처리된 유저의 경우 refreshToken 을 사용하지 못하도록 수정
+        if (redisTemplate.opsForValue()["RT:${member.email}"] == null) {
+            throw RefreshAuthenticationEntryPointException("이미 로그아웃된 유저입니다. 다시 로그인해주세요.")
+        }
+        
+        val accessToken = jwtTokenService.createAccessToken(memberId)
+        return RefreshTokenResponse(accessToken = accessToken)
     }
     
     fun sendMobileVerificationCode(request: PhoneAuthRequest) {

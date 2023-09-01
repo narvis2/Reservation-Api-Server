@@ -23,11 +23,17 @@ class SignApiController(
     @PostMapping("/signOut")
     @ResponseStatus(HttpStatus.OK)
     fun signOut(
-        @RequestHeader("Authorization") authorizationHeader: String
+        @RequestHeader(value = "Authorization") authorizationHeader: String
     ): ApiResponse<Unit> {
         signService.signOut(authorizationHeader)
         return ApiResponse.success()
     }
+    
+    @PostMapping("/refresh-token")
+    @ResponseStatus(HttpStatus.OK)
+    fun refreshToken(
+        @RequestHeader(value = "Authorization") refreshToken: String
+    ): ApiResponse<RefreshTokenResponse> = ApiResponse.success(signService.refreshToken(refreshToken))
     
     @PostMapping("/phone")
     @ResponseStatus(HttpStatus.OK)

@@ -6,6 +6,7 @@ import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.BindException
+import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -146,5 +147,17 @@ class ExceptionAdvice {
     @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
     fun multipartException(): ApiResponse<Unit> {
         return ApiResponse.failure(-1019, "파일 용량초과, 요청하신 파일이 너무 큽니다.")
+    }
+    
+    @ExceptionHandler(RefreshAuthenticationEntryPointException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun refreshAuthenticationEntryPointException(e: RefreshAuthenticationEntryPointException): ApiResponse<Unit> {
+        return ApiResponse.failure(-1020, e.message ?: "인증이 만료되었습니다. 다시 로그인해주세요.")
+    }
+    
+    @ExceptionHandler(MissingRequestHeaderException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun missingRequestHeaderException(e: MissingRequestHeaderException): ApiResponse<Unit> {
+        return ApiResponse.failure(-1021, "${e.headerName} 요청 헤더가 누락되었습니다.")
     }
 }
