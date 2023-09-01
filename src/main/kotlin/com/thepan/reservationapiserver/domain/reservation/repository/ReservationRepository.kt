@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Date
 
 interface ReservationRepository : JpaRepository<Reservation, Long>, CustomReservationRepository {
     @Query("select r from Reservation r where r.certificationNumber is null")
@@ -36,7 +37,7 @@ interface ReservationRepository : JpaRepository<Reservation, Long>, CustomReserv
         @Param("name") name: String,
         @Param("phoneNumber") phoneNumber: String,
         @Param("timeType") timeType: TimeType,
-        @Param("reservationDateTime") reservationDateTime: LocalDateTime
+        @Param("reservationDateTime") reservationDateTime: Date
     ): Reservation?
 
     /**
@@ -46,7 +47,7 @@ interface ReservationRepository : JpaRepository<Reservation, Long>, CustomReserv
     @Query("SELECT r.seat FROM Reservation r WHERE r.timeType = :timeType AND r.reservationDateTime = :reservationDateTime")
     fun findByTimeTypeAndDateTime(
         @Param("timeType") timeType: TimeType,
-        @Param("reservationDateTime") reservationDateTime: LocalDateTime
+        @Param("reservationDateTime") reservationDateTime: Date
     ): MutableSet<ReservationSeat>
 
     /**
@@ -64,6 +65,6 @@ interface ReservationRepository : JpaRepository<Reservation, Long>, CustomReserv
      */
     fun findByTimeTypeAndReservationDateTimeAndCertificationNumberIsNull(
         timeType: TimeType,
-        reservationDateTime: LocalDateTime
+        reservationDateTime: Date
     ): List<Reservation>
 }

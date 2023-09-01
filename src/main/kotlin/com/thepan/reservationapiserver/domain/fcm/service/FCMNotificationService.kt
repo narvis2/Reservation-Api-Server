@@ -28,7 +28,7 @@ class FCMNotificationService(
         
         targetReservation.fcmToken?.let { token ->
             sendFCMPush(token, request.title, request.body, request.data)
-        } ?: throw AuthenticationEntryPointException()
+        }
     }
     
     // 📌 마스터에게 알림 보내기
@@ -43,7 +43,7 @@ class FCMNotificationService(
             if (targetMaster.isPushEnable) {
                 sendFCMPush(token, request.title, request.body, request.data)
             }
-        } ?: throw AuthenticationEntryPointException()
+        }
     }
     
     private fun sendFCMPush(fcmToken: String, title: String, body: String, data: Map<String, String>?) {

@@ -1,6 +1,8 @@
 package com.thepan.reservationapiserver.domain.reservation.repository
 
+import com.thepan.reservationapiserver.domain.reservation.dto.ReservationRangeSectionResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationConditionResponse
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationDateRangeRequest
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationReadConditionRequest
 import org.springframework.data.domain.Page
 
@@ -10,4 +12,6 @@ import org.springframework.data.domain.Page
  */
 interface CustomReservationRepository {
     fun findAllByCondition(condition: ReservationReadConditionRequest): Page<ReservationConditionResponse>
+    
+    fun findRangeGroupBy(request: ReservationDateRangeRequest): List<ReservationRangeSectionResponse>
 }
