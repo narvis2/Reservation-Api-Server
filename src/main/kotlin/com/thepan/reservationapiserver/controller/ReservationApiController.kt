@@ -3,6 +3,7 @@ package com.thepan.reservationapiserver.controller
 import com.thepan.reservationapiserver.domain.base.ApiResponse
 import com.thepan.reservationapiserver.domain.reservation.ReservationService
 import com.thepan.reservationapiserver.domain.reservation.dto.*
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationDateRangeRequest
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationListResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationReadConditionRequest
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
@@ -104,4 +105,11 @@ class ReservationApiController(
         condition: ReservationReadConditionRequest
     ): ApiResponse<ReservationListResponse> =
         ApiResponse.success(reservationService.readPageNationReservationList(condition))
+    
+    @GetMapping("/reservation/range")
+    @ResponseStatus(HttpStatus.OK)
+    fun readRangeDate(
+        @Valid
+        request: ReservationDateRangeRequest
+    ): ApiResponse<List<ReservationRangeSectionResponse>> = ApiResponse.success(reservationService.getReservationDateRangeList(request))
 }
