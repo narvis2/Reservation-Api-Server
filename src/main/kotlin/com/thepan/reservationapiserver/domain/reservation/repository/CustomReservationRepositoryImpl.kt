@@ -1,12 +1,17 @@
 package com.thepan.reservationapiserver.domain.reservation.repository
 
 import com.querydsl.core.BooleanBuilder
+import com.querydsl.core.group.GroupBy.groupBy
+import com.querydsl.core.group.GroupBy.list
 import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.Projections.constructor
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
+import com.thepan.reservationapiserver.domain.reservation.dto.ReservationRangeSectionDataResponse
+import com.thepan.reservationapiserver.domain.reservation.dto.ReservationRangeSectionResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.enum.ReservationFilterType
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationConditionResponse
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationDateRangeRequest
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationReadConditionRequest
 import com.thepan.reservationapiserver.domain.reservation.entity.QReservation.reservation
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
@@ -35,6 +40,36 @@ class CustomReservationRepositoryImpl(
         val totalCount = fetchCount(predicate) ?: 0
         
         return PageImpl(results, pageable, totalCount)
+    }
+    
+    override fun findRangeGroupBy(request: ReservationDateRangeRequest): List<ReservationRangeSectionResponse> {
+        return jpaQueryFactory
+            .selectFrom(reservation)
+            .where(reservation.reservationDateTime.between(request.searchStartDate, request.searchEndDate))
+            .orderBy(reservation.reservationDateTime.asc())
+            .transform(
+                groupBy(reservation.reservationDateTime).list(
+                    constructor(
+                        ReservationRangeSectionResponse::class.java,
+                        reservation.reservationDateTime,
+                        reservation.timeType,
+                        list(
+                            constructor(
+                                ReservationRangeSectionDataResponse::class.java,
+                                reservation.id,
+                                reservation.name,
+                                reservation.phoneNumber,
+                                reservation.reservationDateTime,
+                                reservation.reservationCount,
+                                reservation.isTermAllAgree,
+                                reservation.isUserValidation,
+                                reservation.certificationNumber,
+                                reservation.timeType,
+                            )
+                        )
+                    )
+                )
+            )
     }
     
     // 예약 목록을 ReservationAllResponse 로 조회한 결과르 반환

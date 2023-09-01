@@ -42,7 +42,7 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api:2.3.1")
     
     implementation("io.jsonwebtoken:jjwt:0.9.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate5:2.14.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.15.0")
     // Spring 3++ Kotlin Query-dsl 설정
     implementation("com.querydsl:querydsl-apt:5.0.0:jakarta")
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")

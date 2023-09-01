@@ -5,6 +5,7 @@ import com.thepan.reservationapiserver.domain.fcm.enum.NotiType
 import com.thepan.reservationapiserver.domain.fcm.service.FCMNotificationService
 import com.thepan.reservationapiserver.domain.mapper.*
 import com.thepan.reservationapiserver.domain.reservation.dto.*
+import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationDateRangeRequest
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationListResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationReadConditionRequest
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
@@ -23,7 +24,7 @@ import com.thepan.reservationapiserver.utils.makeReservationRandomCode
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
+import java.util.Date
 
 @Service
 class ReservationService(
@@ -53,8 +54,17 @@ class ReservationService(
             )
         )
         
+        // 마스터에게 NOTIFICATION 날리기
+        fcmNotificationService.sendNotificationMaster(
+            FCMNotificationRequest(
+                targetId = 2,
+                title = "[우회담] 예약 알림",
+                body = "${reservation.name}님이 ${designateTime(reservation.timeType.type, reservation.reservationDateTime)}에 예약하셨습니다.",
+                data = mapOf("type" to NotiType.NOTI_M.type)
+            )
+        )
+    
         // TODO:: KAKAO 알림톡으로 예약자에게 안내문자 알려주기
-        // TODO:: 사장에겐 Notification 날리기
         log.info("🌸 예약 등록 END =========================")
     }
     
@@ -77,7 +87,7 @@ class ReservationService(
     // 📌 PartTime 을 신경쓰지않고 특정 날짜의 남아있는 좌석을 PartTime 별로 분류하여 List 로 가져옴
     fun getTargetDateReservationSeatList(condition: ReservationTargetDateRequest): List<ReservationTargetDateResponse> {
         val reservationDateList: ArrayList<ReservationTargetDateResponse> = ArrayList()
-    
+        
         TimeType.values().forEach { timeType ->
             val targetSeatList = getTargetReservationSeatList(
                 ReservationSeatListRequest(timeType.name, designateTime(timeType.type, condition.findDate))
@@ -91,7 +101,10 @@ class ReservationService(
 
     // 📌 특정 날짜의 PartTime 에 남아있는 좌석 List 가져오기
     fun getTargetReservationSeatList(request: ReservationSeatListRequest): List<SeatType> {
-        val reservedSeatList = getReservationInfoList(request.timeType, request.reservationDateTime)
+        val dateTime = designateTime(stringToTimeType(request.timeType).type, request.reservationDateTime)
+        
+        val reservedSeatList = getReservationInfoList(request.timeType, dateTime)
+        
         val allSeatList = seatRepository.findAll()
 
         return if (reservedSeatList.isEmpty()) {
@@ -119,6 +132,13 @@ class ReservationService(
         reservationRepository.save(reservation)
         // TODO:: 수락 성공한 경우 KAKAO 알림톡으로 인증번호와 함께 알려주기
     }
+    
+    /**
+     * 📌 날짜 범위 조회
+     * - 시작 날짜와 마지막 날짜 사이의 데이터를 조회하여 반환함
+     * - 이때 예약 날짜를 기준으로 Section List 를 만들어서 반환
+     */
+    fun getReservationDateRangeList(request: ReservationDateRangeRequest): List<ReservationRangeSectionResponse> = reservationRepository.findRangeGroupBy(request)
 
     // 📌 중복 예약 체크
     private fun checkIsDuplicateConference(request: ReservationCreateRequest) {
@@ -181,7 +201,7 @@ class ReservationService(
     ): List<ReservationAllResponse> =
         reservationRepository.findByTimeTypeAndReservationDateTimeAndCertificationNumberIsNull(
             request.timeType,
-            request.reservationDateTime
+            designateTime(request.timeType.type, request.reservationDateTime)
         ).toReservationAllResponseList()
     
     fun readPageNationReservationList(condition: ReservationReadConditionRequest): ReservationListResponse =
@@ -193,7 +213,7 @@ class ReservationService(
     
     private fun getReservationInfoList(
         timeType: String,
-        reservationDateTime: LocalDateTime
+        reservationDateTime: Date
     ): List<Seat> = reservationRepository.findByTimeTypeAndDateTime(
         stringToTimeType(timeType),
         reservationDateTime
