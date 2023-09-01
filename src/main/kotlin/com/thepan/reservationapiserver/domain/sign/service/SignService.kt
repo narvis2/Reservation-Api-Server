@@ -41,31 +41,22 @@ class SignService(
     }
     
     @Transactional(readOnly = true)
-    fun signOut(accessToken: String) {
-        // Token 유효성 검사
-        if (!jwtTokenService.validateAccessToken(accessToken)) {
-            return
-        }
-        
-        // Token 에서 subject 추출
-        val memberId = jwtTokenService.extractAccessTokenSubject(accessToken)
-        
-        // 추출한 subject 를 바탕으로 Member 조회
-        val member = memberRepository.findById(
-            memberId.toLong()
-        ).orElseThrow {
-            MemberNotFoundException()
-        }
+    fun signOut(accessToken: String, body: SignOutRequest) {
+        val member = getFindByMemberId(memberId = body.memberId)
     
         // Redis 에서 해당 Member Email 로 저장된 Refresh Token 이 있는지 여부를 확인 후에 있을 경우 삭제
         if (redisTemplate.opsForValue()["RT:${member.email}"] != null) {
             redisTemplate.delete("RT:${member.email}")
         }
     
-        // 해당 Access Token 유효시간을 가지고 와서 BlackList 에 저장
-        val expiration = jwtTokenService.getAccessTokenExpiresTime()
-        val removeBearerToken = jwtTokenService.removeBearerPrefix(accessToken)
-        redisTemplate.opsForValue().set(removeBearerToken, "logout", expiration, TimeUnit.MILLISECONDS)
+        /**
+         * Token 이 유효한 경우 Token 의 유효시간을 가지고 와서 BlackList 에 저장
+         */
+        if (jwtTokenService.validateAccessToken(accessToken)) {
+            val expiration = jwtTokenService.getAccessTokenExpiresTime()
+            val removeBearerToken = jwtTokenService.removeBearerPrefix(accessToken)
+            redisTemplate.opsForValue().set(removeBearerToken, "logout", expiration, TimeUnit.MILLISECONDS)
+        }
     }
     
     @Transactional(readOnly = true)
@@ -75,11 +66,7 @@ class SignService(
         }
     
         val memberId = jwtTokenService.extractRefreshTokenSubject(refreshToken)
-        val member = memberRepository.findById(
-            memberId.toLong()
-        ).orElseThrow {
-            MemberNotFoundException()
-        }
+        val member = getFindByMemberId(memberId = memberId.toLong())
     
         // 이미 로그아웃 처리된 유저의 경우 refreshToken 을 사용하지 못하도록 수정
         if (redisTemplate.opsForValue()["RT:${member.email}"] == null) {
@@ -136,7 +123,7 @@ class SignService(
                 throw PhoneAuthCheckFailureException()
             }
         }
-        
+    
         redisTemplate.delete(getPhoneAuthCodeKey(request.name, request.phoneNumber))
     }
     
@@ -144,6 +131,13 @@ class SignService(
         if (!bCryptPasswordEncoder.matches(password, member.password))
             throw LoginFailureException()
     }
+    
+    private fun getFindByMemberId(memberId: Long): Member = memberRepository.findById(
+        memberId
+    ).orElseThrow {
+        MemberNotFoundException()
+    }
+    
     
     companion object {
         private val log = KotlinLogging.logger {}

@@ -23,9 +23,12 @@ class SignApiController(
     @PostMapping("/signOut")
     @ResponseStatus(HttpStatus.OK)
     fun signOut(
-        @RequestHeader(value = "Authorization") authorizationHeader: String
+        @RequestHeader(value = "Authorization") authorizationHeader: String,
+        @Valid
+        @RequestBody
+        request: SignOutRequest
     ): ApiResponse<Unit> {
-        signService.signOut(authorizationHeader)
+        signService.signOut(authorizationHeader, request)
         return ApiResponse.success()
     }
     
