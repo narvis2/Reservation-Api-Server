@@ -55,6 +55,7 @@ class SecurityConfig(
                 ).permitAll()
                     .requestMatchers(HttpMethod.GET, "/image/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/reservation").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/reservation/range").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/banner/images").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/reservation/filter").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/api/v1/reservation/check-auth/{id}").hasRole("ADMIN")

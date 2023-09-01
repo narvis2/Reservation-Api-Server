@@ -2,9 +2,10 @@ package com.thepan.reservationapiserver.domain.reservation.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
-import java.util.Date
+import com.thepan.reservationapiserver.domain.seat.entity.TimeType
+import java.util.*
 
-data class ReservationDetailResponse(
+data class ReservationRangeSectionDataResponse(
     val id: Long?,
     val name: String, // 성함
     val phoneNumber: String, // 핸드폰 번호
@@ -14,5 +15,5 @@ data class ReservationDetailResponse(
     val isTermAllAgree: Boolean, // 약관 동의 여부
     val isUserValidation: Boolean, // 본인 인증 여부
     val certificationNumber: String?, // 예약 인증 번호
-    val seats: List<SeatType> // 예약한 좌석
+    val timeType: TimeType, // Part Time
 )

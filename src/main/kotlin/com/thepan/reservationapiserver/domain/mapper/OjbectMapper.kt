@@ -15,6 +15,7 @@ import com.thepan.reservationapiserver.domain.notice.entity.NoticeImage
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationAllResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationCreateRequest
 import com.thepan.reservationapiserver.domain.reservation.dto.ReservationDetailResponse
+import com.thepan.reservationapiserver.domain.reservation.dto.ReservationRangeSectionDataResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationConditionResponse
 import com.thepan.reservationapiserver.domain.reservation.dto.page.ReservationListResponse
 import com.thepan.reservationapiserver.domain.reservation.entity.Reservation
@@ -52,6 +53,20 @@ fun Reservation.toReservationDetailResponse(): ReservationDetailResponse = Reser
         seat.seatType
     }
 )
+
+fun List<Reservation>.toSectionDataResponseList(): List<ReservationRangeSectionDataResponse> = map {
+    ReservationRangeSectionDataResponse(
+        id = it.id,
+        name = it.name,
+        phoneNumber = it.phoneNumber,
+        reservationDateTime = it.reservationDateTime,
+        reservationCount = it.reservationCount,
+        isTermAllAgree = it.isTermAllAgree,
+        isUserValidation = it.isUserValidation,
+        certificationNumber = it.certificationNumber,
+        timeType = it.timeType
+    )
+}
 
 fun List<Reservation>.toReservationAllResponseList(): List<ReservationAllResponse> = map {
     ReservationAllResponse(

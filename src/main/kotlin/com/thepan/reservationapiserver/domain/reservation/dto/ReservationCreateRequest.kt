@@ -2,7 +2,7 @@ package com.thepan.reservationapiserver.domain.reservation.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import jakarta.validation.constraints.*
-import java.time.LocalDateTime
+import java.util.Date
 
 data class ReservationCreateRequest(
     @field:NotBlank(message = "성함을 입력해주세요.")
@@ -17,7 +17,7 @@ data class ReservationCreateRequest(
         timezone = "Asia/Seoul"
     )
     @field:Future(message = "예약시간은 현재시간보다 미래여야 합니다.")
-    val reservationDateTime: LocalDateTime,
+    val reservationDateTime: Date,
     @field:NotNull(message = "예약인원 수를 입력해주세요.")
     @field:Positive(message = "올바른 예약인원 수를 입력해주세요. (0이상)")
     val reservationCount: Int,
