@@ -90,7 +90,7 @@ class ReservationApiController(
         request: ReservationApprovalCheckRequest
     ): ApiResponse<Unit> {
         reservationService.updateAuthorizedReservation(id, request)
-        return ApiResponse.success()
+        return ApiResponse.success(successMsg = if (request.isApproved) "예약 승인 처리가 완료되었습니다." else "예약이 거절(삭제)되었습니다.")
     }
 
     @GetMapping("/reservation/non-auth/day-time")

@@ -46,6 +46,8 @@ class SecurityConfig(
             .authorizeHttpRequests { auth -> // 인증, 인가 설정
                 auth.requestMatchers(
                     "/api/v1/sign/signIn",
+                    "/api/v1/sign/signOut",
+                    "/api/v1/sign/refresh-token",
                     "/api/v1/sign/phone",
                     "/api/v1/sign/phone/check",
                     "/api/v1/seats/**",
