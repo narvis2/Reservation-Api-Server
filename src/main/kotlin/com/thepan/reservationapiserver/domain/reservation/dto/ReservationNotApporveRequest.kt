@@ -1,13 +1,13 @@
 package com.thepan.reservationapiserver.domain.reservation.dto
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.thepan.reservationapiserver.domain.seat.entity.TimeType
 import jakarta.validation.constraints.NotNull
-import org.springframework.format.annotation.DateTimeFormat
-import java.util.Date
+import java.time.LocalDateTime
 
 data class ReservationNotApporveRequest (
     @field:NotNull
     val timeType: TimeType,
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    val reservationDateTime: Date,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    val reservationDateTime: LocalDateTime,
 )

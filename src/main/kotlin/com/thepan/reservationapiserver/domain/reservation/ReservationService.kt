@@ -19,12 +19,13 @@ import com.thepan.reservationapiserver.exception.DuplicateConferenceSeatExceptio
 import com.thepan.reservationapiserver.exception.ReservationNotFoundException
 import com.thepan.reservationapiserver.exception.SeatNotFoundException
 import com.thepan.reservationapiserver.utils.designateTime
+import com.thepan.reservationapiserver.utils.formattedDate
 import com.thepan.reservationapiserver.utils.isCheckDuplicatedList
 import com.thepan.reservationapiserver.utils.makeReservationRandomCode
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.Date
+import java.time.LocalDateTime
 
 @Service
 class ReservationService(
@@ -36,24 +37,17 @@ class ReservationService(
 
     @Transactional
     fun create(request: ReservationCreateRequest) {
-        log.info("🌸 FcmToken 👉 ${request.fcmToken}")
         checkIsDuplicateConference(request)
         val seatList = checkIsValidSeatName(request)
         checkIsDuplicateSeat(request)
-
+    
         log.info("🌸 예약 등록 START =========================")
-        val reservation = reservationRepository.save(request.toEntity(seatList))
-        
+        val test = request.toEntity(seatList)
+        val reservation = reservationRepository.save(test)
+    
         // 예약자에게 NOTIFICATION 날리기
-        fcmNotificationService.sendNotificationReservation(
-            FCMNotificationRequest(
-                targetId = reservation.id,
-                title = "[우회담] 예약 완료",
-                body = "우회담에 예약 신청이 완료되었습니다. SMS 문자를 확인해 주세요.",
-                data = mapOf("type" to NotiType.NOTI_A.type)
-            )
-        )
-        
+        fcmNotificationService.sendNotificationReservation(FCMNotificationRequest(targetId = reservation.id, title = "[우회담] 예약 완료", body = "우회담에 예약 신청이 완료되었습니다. SMS 문자를 확인해 주세요.", data = mapOf("type" to NotiType.NOTI_A.type)))
+    
         // 마스터에게 NOTIFICATION 날리기
         fcmNotificationService.sendNotificationMaster(
             FCMNotificationRequest(
@@ -89,10 +83,10 @@ class ReservationService(
         val reservationDateList: ArrayList<ReservationTargetDateResponse> = ArrayList()
         
         TimeType.values().forEach { timeType ->
-            val targetSeatList = getTargetReservationSeatList(
-                ReservationSeatListRequest(timeType.name, designateTime(timeType.type, condition.findDate))
-            )
-            
+            val targetSeatList = getTargetReservationSeatList(ReservationSeatListRequest(timeType.name, condition.findDate))
+    
+            log.info("timeType 👉 $targetSeatList")
+    
             reservationDateList.add(ReservationTargetDateResponse(timeType, targetSeatList))
         }
         
@@ -101,18 +95,16 @@ class ReservationService(
 
     // 📌 특정 날짜의 PartTime 에 남아있는 좌석 List 가져오기
     fun getTargetReservationSeatList(request: ReservationSeatListRequest): List<SeatType> {
-        val dateTime = designateTime(stringToTimeType(request.timeType).type, request.reservationDateTime)
-        
-        val reservedSeatList = getReservationInfoList(request.timeType, dateTime)
-        
+        val reservedSeatList = getReservationInfoList(request.timeType, formattedDate(stringToTimeType(request.timeType).type, request.reservationDateTime))
+    
         val allSeatList = seatRepository.findAll()
-
+    
         return if (reservedSeatList.isEmpty()) {
             allSeatList.map { it.seatType }
         } else {
             // 같은 날짜에 이미 예약되어있는 좌석 제거하고 남아있는 좌석만 가져오기
             val leftReservationList = allSeatList.filterNot { it in reservedSeatList }
-
+        
             leftReservationList.map { it.seatType }
         }
     }
@@ -200,8 +192,7 @@ class ReservationService(
         request: ReservationNotApporveRequest
     ): List<ReservationAllResponse> =
         reservationRepository.findByTimeTypeAndReservationDateTimeAndCertificationNumberIsNull(
-            request.timeType,
-            designateTime(request.timeType.type, request.reservationDateTime)
+            request.timeType, request.reservationDateTime
         ).toReservationAllResponseList()
     
     fun readPageNationReservationList(condition: ReservationReadConditionRequest): ReservationListResponse =
@@ -212,8 +203,7 @@ class ReservationService(
     }
     
     private fun getReservationInfoList(
-        timeType: String,
-        reservationDateTime: Date
+        timeType: String, reservationDateTime: LocalDateTime
     ): List<Seat> = reservationRepository.findByTimeTypeAndDateTime(
         stringToTimeType(timeType),
         reservationDateTime
