@@ -4,8 +4,7 @@ import com.thepan.reservationapiserver.domain.base.BaseEntity
 import com.thepan.reservationapiserver.domain.seat.entity.Seat
 import com.thepan.reservationapiserver.domain.seat.entity.TimeType
 import jakarta.persistence.*
-import org.springframework.data.jpa.repository.Temporal
-import java.util.Date
+import java.time.LocalDateTime
 
 @Entity
 class Reservation(
@@ -18,8 +17,7 @@ class Reservation(
     @Column(nullable = false, length = 11)
     var phoneNumber: String,
     @Column(nullable = false)
-    @Temporal(TemporalType.DATE)
-    var reservationDateTime: Date,
+    var reservationDateTime: LocalDateTime,
     @Column(nullable = false)
     var reservationCount: Int,
     @Enumerated(EnumType.STRING)
@@ -44,7 +42,7 @@ class Reservation(
     constructor(
         name: String,
         phoneNumber: String,
-        reservationDateTime: Date,
+        reservationDateTime: LocalDateTime,
         reservationCount: Int,
         timeType: TimeType,
         isTermAllAgree: Boolean,

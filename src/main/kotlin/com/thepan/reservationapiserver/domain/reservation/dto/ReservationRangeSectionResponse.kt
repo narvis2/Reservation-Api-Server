@@ -2,7 +2,7 @@ package com.thepan.reservationapiserver.domain.reservation.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.thepan.reservationapiserver.domain.seat.entity.TimeType
-import java.util.Date
+import java.time.LocalDateTime
 
 data class ReservationRangeSectionResponse(
     @JsonFormat(
@@ -10,7 +10,7 @@ data class ReservationRangeSectionResponse(
         pattern = "yyyy-MM-dd",
         timezone = "Asia/Seoul"
     )
-    val sectionTitle: Date,
+    val sectionTitle: LocalDateTime,
     val timeType: TimeType,
     val list: List<ReservationRangeSectionDataResponse>
 )

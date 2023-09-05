@@ -1,18 +1,19 @@
 package com.thepan.reservationapiserver.utils
 
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-fun designateTime(type: String, date: Date): Date {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-    val dateString = dateFormat.format(date)
-    val formattedString = "$dateString $type"
-    return SimpleDateFormat("yyyy-MM-dd HH:mm").parse(formattedString)
+fun designateTime(type: String, date: LocalDateTime): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val formattedDate = date.format(formatter)
+    return "$formattedDate $type"
 }
 
-fun dateTimeFormatToDate(date: Date): Date {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-    val formattedString = dateFormat.format(date)
+fun formattedDate(type: String, date: LocalDateTime): LocalDateTime {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val formattedDate = date.format(formatter)
+    val dateString =  "$formattedDate ${type}:00"
+    val formatterResult = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     
-    return dateFormat.parse(formattedString)
+    return LocalDateTime.parse(dateString, formatterResult)
 }
