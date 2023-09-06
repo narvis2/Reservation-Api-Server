@@ -14,6 +14,7 @@ import com.thepan.reservationapiserver.domain.seat.entity.Seat
 import com.thepan.reservationapiserver.domain.seat.entity.SeatType
 import com.thepan.reservationapiserver.domain.seat.entity.TimeType
 import com.thepan.reservationapiserver.domain.seat.repository.SeatRepository
+import com.thepan.reservationapiserver.domain.sms.service.NaverSensV2Service
 import com.thepan.reservationapiserver.exception.DuplicateConferenceException
 import com.thepan.reservationapiserver.exception.DuplicateConferenceSeatException
 import com.thepan.reservationapiserver.exception.ReservationNotFoundException
@@ -31,7 +32,8 @@ import java.time.LocalDateTime
 class ReservationService(
     private val reservationRepository: ReservationRepository,
     private val seatRepository: SeatRepository,
-    private val fcmNotificationService: FCMNotificationService
+    private val fcmNotificationService: FCMNotificationService,
+    private val naverSensV2Service: NaverSensV2Service,
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -42,8 +44,7 @@ class ReservationService(
         checkIsDuplicateSeat(request)
     
         log.info("🌸 예약 등록 START =========================")
-        val test = request.toEntity(seatList)
-        val reservation = reservationRepository.save(test)
+        val reservation = reservationRepository.save(request.toEntity(seatList))
     
         // 예약자에게 NOTIFICATION 날리기
         fcmNotificationService.sendNotificationReservation(FCMNotificationRequest(targetId = reservation.id, title = "[우회담] 예약 완료", body = "우회담에 예약 신청이 완료되었습니다. SMS 문자를 확인해 주세요.", data = mapOf("type" to NotiType.NOTI_A.type)))
@@ -52,7 +53,7 @@ class ReservationService(
         fcmNotificationService.sendNotificationMaster(
             FCMNotificationRequest(
                 targetId = 2,
-                title = "[우회담] 예약 알림",
+                title = "[우회담] 예약 요청 알림",
                 body = "${reservation.name}님이 ${designateTime(reservation.timeType.type, reservation.reservationDateTime)}에 예약하셨습니다.",
                 data = mapOf("type" to NotiType.NOTI_M.type)
             )
@@ -116,13 +117,15 @@ class ReservationService(
 
         if (!request.isApproved) {
             reservationRepository.delete(reservation)
-            // TODO:: 수락 취소된 경우 KAKAO 알림톡으로 알려주기
+            naverSensV2Service.sendSMSMessage(reservation.phoneNumber, "${reservation.name}님의 예약이 거절되었습니다.\n자세한 내용은 관리자에게 문의하시길 바랍니다.")
+            fcmNotificationService.sendNotificationReservation(FCMNotificationRequest(targetId = reservation.id, title = "[우회담] 예약 거절", body = "신청하신 예약이 거절되었습니다.\n자세한 내용은 관리자에게 문의하시길 바랍니다.", data = mapOf("type" to NotiType.NOTI_R.type)))
             return
         }
 
         reservation.certificationNumber = makeReservationRandomCode()
         reservationRepository.save(reservation)
-        // TODO:: 수락 성공한 경우 KAKAO 알림톡으로 인증번호와 함께 알려주기
+        naverSensV2Service.sendSMSMessage(reservation.phoneNumber, "${reservation.name}님의 예약이 승인되었습니다.\n${reservation.certificationNumber} 예약자 번호로 예약정보를 확인할 수 있습니다.")
+        fcmNotificationService.sendNotificationReservation(FCMNotificationRequest(targetId = reservation.id, title = "[우회담] 예약 완료", body = "신청하신 예약이 승인되었습니다.\n자세한 내용은 SMS 문자를 확인해주세요.", data = mapOf("type" to NotiType.NOTI_R.type)))
     }
     
     /**
