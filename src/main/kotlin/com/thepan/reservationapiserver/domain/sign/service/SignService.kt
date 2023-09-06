@@ -92,7 +92,7 @@ class SignService(
         
         val randomAuthenticationCode = makeRandomMessage()
         
-        val response = naverSensV2Service.sendSMSMessage(request.phoneNumber, randomAuthenticationCode)
+        val response = naverSensV2Service.sendSMSMessage(request.phoneNumber, "우회담 본인인증 [$randomAuthenticationCode]")
         
         if (response.statusCode == "202" && response.statusName == "success") {
             redisTemplate.opsForValue().set(

@@ -51,13 +51,13 @@ class NaverSensV2Service(
         val toArray = JSONArray()
         
         // 난수와 함께 전송
-        toJson["content"] = "우회담 본인인증 [$rand]"
+        toJson["content"] = rand
         toJson["to"] = phoneNumber
         toArray.add(toJson)
         
         // 메시지 Type (sms | 1ms)
         bodyJson["type"] = "sms"
-        bodyJson["content"] = "우회담 본인인증 [$rand]"
+        bodyJson["content"] = rand
         bodyJson["contentType"] = "COMM" // 일반 메시지
         bodyJson["countryCode"] = "82" // 국가 번호
         
