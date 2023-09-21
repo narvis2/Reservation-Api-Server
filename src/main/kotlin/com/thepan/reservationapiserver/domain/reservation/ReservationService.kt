@@ -1,5 +1,6 @@
 package com.thepan.reservationapiserver.domain.reservation
 
+import com.thepan.reservationapiserver.domain.fcm.dto.FCMDeleteReservationNotificationRequest
 import com.thepan.reservationapiserver.domain.fcm.dto.FCMNotificationRequest
 import com.thepan.reservationapiserver.domain.fcm.enum.NotiType
 import com.thepan.reservationapiserver.domain.fcm.service.FCMNotificationService
@@ -118,13 +119,25 @@ class ReservationService(
         if (!request.isApproved) {
             reservationRepository.delete(reservation)
             naverSensV2Service.sendSMSMessage(reservation.phoneNumber, "${reservation.name}님의 예약이 거절되었습니다.\n자세한 내용은 관리자에게 문의하시길 바랍니다.")
-            fcmNotificationService.sendNotificationReservation(FCMNotificationRequest(targetId = reservation.id, title = "[우회담] 예약 거절", body = "신청하신 예약이 거절되었습니다.\n자세한 내용은 관리자에게 문의하시길 바랍니다.", data = mapOf("type" to NotiType.NOTI_R.type)))
+            reservation.fcmToken?.let {
+                fcmNotificationService.sendNotificationDeletedReservation(
+                    FCMDeleteReservationNotificationRequest(
+                        fcmToken = it,
+                        title = "[우회담] 예약 거절",
+                        body = "신청하신 예약이 거절되었습니다.\n자세한 내용은 관리자에게 문의하시길 바랍니다.",
+                        data = mapOf("type" to NotiType.NOTI_R.type)
+                    )
+                )
+            }
             return
         }
 
         reservation.certificationNumber = makeReservationRandomCode()
         reservationRepository.save(reservation)
-        naverSensV2Service.sendSMSMessage(reservation.phoneNumber, "${reservation.name}님의 예약이 승인되었습니다.\n${reservation.certificationNumber} 예약자 번호로 예약정보를 확인할 수 있습니다.")
+        naverSensV2Service.sendSMSMessage(
+            reservation.phoneNumber,
+            "${reservation.name}님의 예약이 승인되었습니다.\n${reservation.certificationNumber} 예약자 번호로 예약정보를 확인할 수 있습니다."
+        )
         fcmNotificationService.sendNotificationReservation(FCMNotificationRequest(targetId = reservation.id, title = "[우회담] 예약 완료", body = "신청하신 예약이 승인되었습니다.\n자세한 내용은 SMS 문자를 확인해주세요.", data = mapOf("type" to NotiType.NOTI_R.type)))
     }
     

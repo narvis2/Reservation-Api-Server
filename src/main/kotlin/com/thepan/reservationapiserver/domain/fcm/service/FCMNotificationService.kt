@@ -3,10 +3,10 @@ package com.thepan.reservationapiserver.domain.fcm.service
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
+import com.thepan.reservationapiserver.domain.fcm.dto.FCMDeleteReservationNotificationRequest
 import com.thepan.reservationapiserver.domain.fcm.dto.FCMNotificationRequest
 import com.thepan.reservationapiserver.domain.member.repository.MemberRepository
 import com.thepan.reservationapiserver.domain.reservation.repository.ReservationRepository
-import com.thepan.reservationapiserver.exception.AuthenticationEntryPointException
 import com.thepan.reservationapiserver.exception.MemberNotFoundException
 import com.thepan.reservationapiserver.exception.ReservationNotFoundException
 import org.springframework.stereotype.Service
@@ -17,6 +17,15 @@ class FCMNotificationService(
     private val memberRepository: MemberRepository,
     private val reservationRepository: ReservationRepository
 ) {
+    // 📌 삭제된 예약자에게 알림 보내기
+    fun sendNotificationDeletedReservation(request: FCMDeleteReservationNotificationRequest) {
+        sendFCMPush(
+            fcmToken = request.fcmToken,
+            title = request.title,
+            body = request.body,
+            data = request.data
+        )
+    }
     
     // 📌 예약자에게 알림 보내기
     fun sendNotificationReservation(request: FCMNotificationRequest) {
